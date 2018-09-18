@@ -1,0 +1,153 @@
+<style lang="less">
+  page {
+    width: 100%;
+    height: 100%;
+  }
+  .ranklist-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  .pieCanvas {}
+  .ranklist-title {
+    width: 100%;
+    text-align: center;
+  }
+  // .canvasHigh {
+  //   width: 2250rpx;
+  //   height: 270rpx;
+  //   transform: translateX(-200%);
+  // }
+
+  .canvas_height{
+    height: 3110rpx;
+  }
+  .canvasHigh{
+    height: 3900rpx;
+    width: 100%;
+
+
+  }
+</style>
+
+<template>
+  <!-- <scroll-view class="ranklist-container" scroll-y style="height:100%;width:100%">
+        <text class="ranklist-title">排名前50排行榜</text>
+        <canvas canvas-id="myCanvas" disable-scroll="false" class="pieCanvas" style="width:100%; height:100%;"></canvas>
+      </scroll-view> -->
+  <scroll-view class="ranklist-container" scroll-y bindscroll='scrollCanvas'>
+    <view class="canvas_height" style='transform: translateX(-{{canvasLen}}px);'>
+      <canvas canvas-id="myCanvas" class="canvasHigh"></canvas>
+    </view>
+  </scroll-view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import BasePage from '../BasePage';
+  import request from '../../js/NetUtils.js';
+  import api from '../../js/url.js';
+  import {
+    ApiComInfo
+  } from '../../js/url.js';
+  var wxCharts = require('../../js/wxcharts-min.js');
+  export default class Charts extends BasePage {
+    config = {
+      navigationBarTitleText: '排行榜',
+      navigationBarTextStyle: 'white',
+      navigationBarBackgroundColor: '#26a2ff',
+      disableScroll: false,
+      enablePullDownRefresh: false,
+      backgroundTextStyle: 'dark'
+    };
+    components = {};
+    data = {
+      ctx: {},
+      totalWidth: 270,
+      lineHeight: 20,
+      maxNumber: 40,
+      list: []
+    };
+    computed = {
+      now() {
+        return +new Date();
+      }
+    };
+    methods = {
+      scrollCanvas(e) {
+        console.log(e)
+        // var canvasLen = e.detail.scrollLeft;
+        // this.setData({
+        //   canvasLen: canvasLen
+        // });
+      }
+    };
+    events = {};
+    onLoad() {
+      this.reqStatInfo();
+      this.ctx = wx.createCanvasContext('myCanvas');
+    }
+    drawRankList(list) {
+      this.maxNumber = list[0].signNum
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        let color = 'blue';
+        if (item.riseFlag == 2) {
+          color = 'red';
+        } else if (item.riseFlag == 3) {
+          color = 'yellow';
+        }
+        let drawData = {
+          x: 0,
+          y: (i + 1) * (this.lineHeight + 10),
+          text: (i+1) + '   ' + item.nickName + '  ',
+          w: item.signNum / this.maxNumber,
+          lineHeight: this.lineHeight,
+          color: color,
+          number: item.signNum
+        };
+        this.drawItem(drawData);
+      }
+      this.ctx.draw();
+    }
+    reqStatInfo() {
+      let that = this;
+      request.post(api.ApiRankList).then(data => {
+        that.list = data.datas.list;
+        console.log(that.list);
+        that.drawRankList(that.list);
+        that.$apply();
+      });
+    }
+    drawItem(data) {
+      let x = data.x;
+      let y = data.y;
+      let text = data.text;
+      console.log(data.text.length);
+      if (data.text.length > 10) {
+        text = data.text.substring(0, 10) + '...';
+      }
+      let w = data.w;
+      let lineWidth = data.lineHeight;
+      let lineColor = 'blue';
+      if (typeof data.color != 'undefined' && data.color != '') {
+        lineColor = data.color;
+      }
+      let textWidth = 70;
+      let fontSize = 10;
+      this.ctx.beginPath();
+      this.ctx.setLineWidth(lineWidth);
+      this.ctx.setStrokeStyle(lineColor);
+      this.ctx.setFontSize(fontSize);
+      this.ctx.fillText(text, x, y + lineWidth * 0.25);
+      this.ctx.moveTo(x + textWidth+20, y);
+      let end = x + textWidth + this.totalWidth * w;
+      this.ctx.lineTo(end, y);
+      this.ctx.fillText(data.number, end + 5, y + lineWidth * 0.25);
+      this.ctx.stroke();
+    }
+  }
+</script>

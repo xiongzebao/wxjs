@@ -1,0 +1,13 @@
+{
+  "description": "A WePY project",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wxe833fd9e56421b4d",
+  "projectname": "wxjs",
+  "miniprogramRoot": "./dist"
+}

@@ -1,0 +1,66 @@
+<script>
+  import wepy from 'wepy'
+  export default class UserHeader extends wepy.component {
+    props = {
+      item: {
+        type: Object
+      },
+      clickItem: {
+        type: Function
+      },
+    }
+    data = {}
+    computed = {
+      avatar() {
+     
+        if (typeof(this.item) == "undefined") {
+          return "../../asset/imgs/me.png";
+        }
+           console.log(this.item.avatarUrl)
+        return typeof(this.item.avatarUrl) == "undefined" ? "../../asset/imgs/me.png" : this.item.avatarUrl;
+      }
+    }
+    onLoad() {}
+    methods = {
+      previewImage(avatarUrl,event) {
+        console.log("previewiamges")
+         
+      
+        wx.previewImage({
+          current: avatarUrl, // 当前显示图片的http链接
+          urls: [avatarUrl] // 需要预览的图片http链接列表
+        })
+      },
+    }
+  }
+</script>
+
+
+<template>
+  <view class="user-header"  >
+    <image data-avatarUrl="{{item.avatarUrl}}" @tap="previewImage({{item.avatarUrl}})" mode="aspectFill" class="userheader-avatar"   src="{{item.avatarUrl}}" />
+    <text class="imageText">{{item.nickName}}</text>
+  </view>
+</template>
+
+
+<style scope>
+  .userheader-avatar {
+    width: 65rpx;
+    height: 65rpx;
+    border-radius: 50%;
+    margin-left: 10rpx;
+    margin-right: 10rpx;
+  }
+  .imageText {
+    font-size: 28rpx;
+    color: #709685;
+    margin-left: 15rpx;
+    text-align: end;
+  }
+  .user-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+</style>

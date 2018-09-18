@@ -1,0 +1,91 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view class="container">
+    <canvas canvas-id="pieCanvas" disable-scroll="true" class="pieCanvas" style="width:300px; height:300px;"></canvas>
+      <canvas canvas-id="lineCanvas" disable-scroll="true" class="pieCanvas" style="width:300px; height:300px;"></canvas>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import {
+    ApiComInfo
+  } from '../../js/url.js'
+  var wxCharts = require('../../js/wxcharts-min.js');
+  export default class Charts extends BasePage {
+    config = {
+      navigationBarTitleText: 'test'
+    }
+    components = {
+    }
+    data = {
+    }
+    computed = {
+      now() {
+        return +new Date()
+      }
+    }
+    methods = {
+    }
+    events = {
+    }
+    onLoad() {
+
+      new wxCharts({
+        animation: true,
+        canvasId: 'pieCanvas',
+        type: 'pie',
+        series: [{
+          name: '成交量1',
+          data: 15,
+        }, {
+          name: '成交量2',
+          data: 35,
+        }, {
+          name: '成交量3',
+          data: 78,
+        }],
+        width: 300,
+        height: 300,
+      });
+          new wxCharts({
+      canvasId: 'lineCanvas',
+      type: 'column',
+      animation: true,
+      categories: ['2012', '2013', '2014', '2015'],
+      series: [{
+        name: '成交量',
+        data: [15, 20, 45, 37],
+        format: function (val, name) {
+          return val.toFixed(2) + '万';
+        }
+      }],
+      yAxis: {
+        format: function (val) {
+          return val + '万';
+        },
+        title: 'Column',
+        min: 0
+      },
+      xAxis: {
+        disableGrid: false,
+        type: 'calibration'
+      },
+      extra: {
+        column: {
+          width: 15
+        }
+      },
+      width: 300,
+      height: 200,
+    });
+ 
+
+    }
+  }
+</script>

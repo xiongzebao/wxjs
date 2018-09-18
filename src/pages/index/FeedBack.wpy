@@ -1,0 +1,155 @@
+<style lang="less">
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10rpx;
+  }
+  .confirm {
+    width: 80%;
+    margin-top: 130rpx;
+    background: #26a2ff;
+    color: white;
+    font-size: 30rpx;
+  }
+  .phclass {
+    font-size: 25rpx;
+  }
+  .note-input {
+    padding: 10rpx;
+    width: 95%;
+    height: 300rpx;
+    border: 1rpx solid #b1b1b1;
+    font-size: 25rpx;
+    margin-top: 10rpx;
+    border-radius: 5rpx;
+  }
+  .tip {
+    font-size: 28rpx;
+    padding: 20rpx;
+    width: 80%;
+    margin-top: 50rpx;
+    box-shadow: 1rpx 1rpx 1rpx 1rpx #f9f9f9;
+    background: #fafafa;
+    color: orange;
+  }
+  .contact {
+    width: 100%;
+    height: 60rpx;
+  }
+  .feedback-contact-title {
+    font-size: 26rpx;
+  }
+  .feedback-contact {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    width: 100%;
+    margin-top: 25rpx;
+  }
+  .feedback-contact-content {
+    height: 50rpx;
+    border: 1rpx solid #b1b1b1;
+    font-size: 25rpx;
+    text-align: center-vertical;
+    line-height: 50rpx;
+    width: 70%;
+    margin-left: 20rpx;
+    padding-left: 10rpx;
+    border-radius: 3rpx;
+  }
+  .phclass-contact {
+    font-size: 25rpx;
+  }
+</style>
+
+<template>
+  <view class="container">
+    <textarea class="note-input" bindinput="onInput" placeholder="请输入您的反馈及意见" maxlength="50" placeholder-class="phclass" value="{{feedback}}" />
+    <view class="feedback-contact">
+      <text class="feedback-contact-title">联系方式(邮箱) :</text>
+      <textarea class="feedback-contact-content" bindinput="onContactInput" placeholder=" " maxlength="50" placeholder-class="phclass-contact" value="{{contact}}" />
+    </view>
+    <button class="confirm" bindtap="onConfirm">提交</button>
+    <text class="tip" wx-if="{{showTip}}">{{tip}} </text>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import dayjs from 'dayjs'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '../../js/url.js'
+  import InterfaceUtils from '../../js/InterfaceUtils'
+  export default class Index extends BasePage {
+    config = {
+      'navigationBarTitleText': '反馈',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {
+      feedback: "",
+      contact: "",
+      tip: "感谢您的反馈，我们会将反馈的处理结果第一时间回复给您"
+    }
+    computed = {}
+    methods = {
+      radioChange(e) {
+        this.signState = e.detail.value;
+      },
+      onConfirm() {
+        let userInfo = wx.getStorageSync("fullUserInfo");
+        console.log(userInfo)
+        let param = {
+          userId: userInfo.userId,
+          content: this.feedback,
+          contact: this.contact,
+        }
+        request.post(api.ApiFeedBack, param)
+          .then((data) => {
+            InterfaceUtils.showToast("感谢您的反馈！")
+          })
+          .catch((e) => {
+            InterfaceUtils.showToast(e.message)
+          });
+      
+      },
+      onInput(e) {
+        this.feedback = e.detail.value;
+      },
+      onContactInput(e) {
+        this.contact = e.detail.value;
+      }
+    }
+    events = {
+      onError(e) {
+        console.log("onError submit")
+        console.log(e)
+        let data = {
+          errorInfo: e,
+          errorType: 1,
+          errorCode: 500
+        }
+        request.post(api.ApiError, data)
+      }
+    }
+    onError(e) {
+      console.log("onError submit")
+      console.log(e)
+      let data = {
+        errorInfo: e,
+        errorType: 1,
+        errorCode: 500
+      }
+      request.post(api.ApiError, data)
+    }
+    onLoad(option) {}
+  }
+</script>

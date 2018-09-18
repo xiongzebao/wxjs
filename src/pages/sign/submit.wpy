@@ -1,0 +1,192 @@
+<style lang="less">
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .section {}
+  .confirm {
+    width: 80%;
+    margin-top: 130rpx;
+    background: #26a2ff;
+    color: white;
+    font-size: 30rpx;
+  }
+  .phclass {
+    font-size: 25rpx;
+  }
+  .note-input {
+    padding: 10rpx;
+    width: 90%;
+    height: 300rpx;
+    border: 1rpx solid #b1b1b1;
+    font-size: 25rpx;
+    margin-top: 10rpx;
+  }
+  .radio {
+    margin-left: 20rpx;
+    font-size: 30rpx;
+  }
+  .radio-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 60rpx;
+  }
+  .tip {
+    font-size: 28rpx;
+    padding: 20rpx;
+    width: 80%;
+    margin-top: 50rpx;
+    box-shadow: 1rpx 1rpx 1rpx 1rpx #f9f9f9;
+    background: #fafafa;
+    color: orange;
+  }
+</style>
+
+<template>
+  <view class="container">
+    <textarea wx-if="{{showInput}}" class="note-input" bindinput="onInput" placeholder="随便写点什么" maxlength="50" placeholder-class="phclass" value="{{signComment}}" />
+    <view class="radio-container">
+      <text style="font-size:30rpx;">是否完成  :</text>
+      <radio-group class="radio-group" bindchange="radioChange">
+        <label class="radio" wx:key="item.name" wx:for="{{items}}">
+              <radio   value="{{item.name}}" color="#26a2ff"/>{{item.value}}
+            </label>
+      </radio-group>
+    </view>
+    <button class="confirm" bindtap="onConfirm"> {{btn}}</button>
+    <text class="tip" wx-if="{{showTip}}">{{tipValue}} </text>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import dayjs from 'dayjs'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '../../js/url.js'
+  import InterfaceUtils from '../../js/InterfaceUtils'
+  export default class Index extends BasePage {
+    config = {
+      'navigationBarTitleText': '签到',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {
+    }
+    data = {
+      signComment: "",
+      signState: "",
+      isResign: "",
+      signDate: "",
+      items: [{
+          name: '1',
+          value: '完成'
+        },
+        {
+          name: '2',
+          value: '未完成'
+        },
+      ],
+      
+    }
+    computed = {
+      btn: () => {
+        return this.isResign == 1 ? "补签" : "签到"
+      },
+      showTip: () => {
+        let tip= wx.getStorageSync("extra").signTip
+        return  typeof(tip) != "undefined" &&tip != ""
+      },
+      tipValue(){
+        return wx.getStorageSync("extra").signTip
+      },
+      showInput() {
+        let extra = wx.getStorageSync("extra")
+        if (extra && extra.showNoteInput && extra.showNoteInput == 1) {
+          return true
+        }
+        return false
+      }
+    }
+    methods = {
+      radioChange(e) {
+        this.signState = e.detail.value;
+      },
+      onConfirm() {
+        /*   if(this.signComment==""){
+              InterfaceUtils.showToast("笔记写点什么吧");
+              return;
+           }*/
+        if (this.signState == "") {
+          InterfaceUtils.showToast("请选择完成情况");
+          return;
+        }
+        let userInfo = wx.getStorageSync("fullUserInfo");
+        console.log(userInfo)
+        let data = {
+          userId: userInfo.userId,
+          nickName: userInfo.nickName,
+          signState: this.signState, //是否完成
+          signComment: this.signComment,
+          isResign: this.isResign,
+          signDate: this.signDate
+        }
+        console.log(data);
+        request.post(api.ApiSign, data)
+          .then((data) => {
+            InterfaceUtils.showToast(data.message);
+            wx.navigateBack({
+              delta: 1
+            });
+          })
+          .catch((e) => {
+            InterfaceUtils.showToast(e.message);
+          });
+      },
+      onInput(e) {
+        this.signComment = e.detail.value;
+      }
+    }
+    events = {
+      onError(e) {
+        console.log("onError submit")
+        console.log(e)
+        let data = {
+          errorInfo: e,
+          errorType: 1,
+          errorCode: 500
+        }
+        request.post(api.ApiError, data)
+      }
+    }
+    onError(e) {
+      console.log("onError submit")
+      console.log(e)
+      let data = {
+        errorInfo: e,
+        errorType: 1,
+        errorCode: 500
+      }
+      request.post(api.ApiError, data)
+    }
+    onLoad(option) {
+
+      console.log(wx.getStorageSync("extra").signTip)
+
+      console.log(option);
+      console.log(option.isResign)
+      console.log(option.signDate);
+      this.isResign = option.isResign;
+      if (this.isResign == 1) {
+        this.signDate = option.signDate;
+      } else {
+        this.signDate = dayjs().format("YYYY-MM-DD");
+      }
+    }
+  }
+</script>

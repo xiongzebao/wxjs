@@ -1,0 +1,234 @@
+<style lang="less">
+  .me-item {
+    width: 100%;
+    font-size: 32rpx;
+    height: 60rpx;
+    padding: 15rpx;
+    background: #ffffff;
+  }
+  .divider {
+    height: 20rpx;
+    background: #efefef;
+    width: 100%;
+  }
+  .divider-small {
+    height: 4rpx;
+    background: #efefef;
+    width: 100%;
+  }
+  .me-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    .header-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100%;
+      padding-top: 40rpx;
+      padding-bottom: 40rpx;
+    }
+  }
+  .me-avatar {
+    width: 150rpx;
+    height: 150rpx;
+    margin: 20rpx;
+    border-radius: 50%;
+  }
+  .me-editclass {
+    border: 1rpx solid black;
+    text-align: center;
+    font-size: 30rpx;
+    width: 70%;
+  }
+  .modifyBtn {
+    color: #26a2ff;
+    font-size: 28rpx;
+    margin-top: 10rpx;
+  }
+</style>
+
+<template>
+  <view class="me-container">
+    <view class="header-container">
+      <image class="me-avatar" src="{{avatarUrl}}" bindtap="onChooseImage" />
+      <input class="{{editclass}}" style="font-weight:bold;text-align: center;" bindinput="onNickNameInput" value="{{nickName}}" disabled="{{disabled}}" bindtap="onModifyNickName" />
+      <text wx-if="{{!disabled}}" bindtap="onModifyCommited" class="modifyBtn">提交修改</text>
+    </view>
+    <view class="divider-small"></view>
+    <text class="me-item" bindtouchstart="containerTap" id="menu-item1">反馈</text>
+    <view class="divider-small"></view>
+    <text class="me-item" bindtouchstart="containerTap" id="menu-item2">关于</text>
+    <view class="divider-small"></view>
+    <text wx-if="showMsg" class="me-item" bindtouchstart="containerTap" id="menu-item3">留言</text>
+    <view wx-if="showMsg" class="divider-small"></view>
+    <text  wx-if="{{showGroup}}" class="me-item" bindtouchstart="containerTap" id="menu-item4">讨论组</text>
+    <view wx-if="{{showGroup}}" class="divider-small"></view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '@/js/url.js'
+  import InterfaceUtils from '../../js/InterfaceUtils'
+  export default class xx extends BasePage {
+    config = {
+      navigationBarTitleText: '个人中心',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {
+      editclass: "",
+      disabled: true,
+      userinfo: {}
+    }
+    computed = {
+      showMsg(){
+           if(wx.getStorageSync("extra").showMessageBoard==1){
+            return true
+        }
+        return false
+      },
+      showGroup(){
+        if(wx.getStorageSync("extra").showGroup==1){
+            return true
+        }
+        return false
+      },
+      avatarUrl() {
+        return this.userinfo.avatarUrl
+      },
+      nickName() {
+        return this.userinfo.nickName
+      }
+    }
+    editNickName(b) {
+      if (b) {
+        this.editclass = "me-editclass"
+        this.disabled = false
+      } else {
+        this.editclass = ""
+        this.disabled = true
+      }
+    }
+    uploadFile(tempFilePaths) {
+      let userId = wx.getStorageSync("userId");
+      // const tempFilePaths = res.tempFilePaths
+      console.log(userId)
+      wx.uploadFile({
+        url: api.ApiUpLoad,
+        filePath: tempFilePaths,
+        name: 'logo',
+        formData: {
+          'userId': userId
+        },
+        success(res) {
+          console.log(res)
+          const data = res.data
+          //do something
+        }
+      })
+    }
+    methods = {
+      onNickNameInput(e) {
+        this.userinfo.nickName = e.detail.value;
+      },
+      onModifyNickName() {
+        if (!this.disabled) {
+          return;
+        }
+        let that = this;
+        wx.showModal({
+          title: '提示',
+          content: '确定要修改用户昵称(修改只对此小程序有效)?',
+          success: function(res) {
+            if (res.confirm) {
+              that.editNickName(true)
+              that.$apply();
+            }
+          }
+        })
+      },
+      onModifyCommited() {
+        let that = this;
+        request.post(api.ApiModifyNickName, {
+            nickName: this.nickName
+          })
+          .then((data) => {
+            InterfaceUtils.showToast(data.message);
+            that.editNickName(false)
+            that.$apply();
+          })
+          .catch((e) => {
+            console.log(e)
+            InterfaceUtils.showToast(e.message)
+          });
+      },
+      onChooseImage() {
+        let that = this;
+        wx.showModal({
+          title: '提示',
+          content: '确定要更改用户图像(修改只对此小程序有效)?',
+          success: function(res) {
+            if (res.confirm) {
+              wx.chooseImage({
+                count: 1, // 默认9
+                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success: function(res) {
+                  // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+                  console.log(res)
+                  var tempFilePaths = res.tempFilePaths
+                  that.userinfo.avatarUrl = tempFilePaths;
+                  that.$apply();
+                  that.uploadFile(tempFilePaths[0])
+                }
+              })
+            }
+          }
+        })
+      },
+      containerTap: function(res) {
+        if (res.currentTarget.id == "menu-item1") {
+          wx.navigateTo({
+            url: `./FeedBack`
+          })
+          return;
+        }
+        if (res.currentTarget.id == "menu-item2") {
+          let about = wx.getStorageSync("about");
+          wx.navigateTo({
+            url: `../info/infoDetail?content= ${about} `
+          })
+          return
+        }
+        if (res.currentTarget.id == "menu-item3") {
+          wx.navigateTo({
+            url: `../index/MessageBoard`
+          })
+          return;
+        }
+        if (res.currentTarget.id == "menu-item4") {
+            let group = wx.getStorageSync("extra").group
+            wx.previewImage({
+              current: group, // 当前显示图片的http链接
+              urls: [group] // 需要预览的图片http链接列表
+            })
+          return;
+        }
+      }
+    }
+    events = {}
+    onLoad() {
+      this.userinfo = wx.getStorageSync("fullUserInfo")
+    }
+  }
+</script>

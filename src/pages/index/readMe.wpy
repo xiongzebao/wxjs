@@ -1,0 +1,55 @@
+<style lang="less">
+  .container {
+    display: flex;
+  }
+  .article {
+    font-size: 25rpx;
+    margin-top: 30rpx;
+  }
+  .title {
+    font-size: 27rpx;
+    color: red;
+  }
+</style>
+
+<template>
+  <view class="container">
+    <text class="title"></text>
+    <text class="article"></text>
+    <text style="font-size:25rpx;font-weight:900;margin-top:30rpx">---   摘自一片国外戒色视频语录</text>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '@/pages/BasePage'
+  import request from '../../js/NetUtils.js'
+  import {
+    ApiComInfo
+  } from '../../js/url.js'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '关于',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {
+    }
+    data = {
+    }
+    computed = {
+      now() {
+        return +new Date()
+      }
+    }
+    methods = {
+    }
+    events = {
+    }
+    onLoad() {
+    }
+  }
+</script>

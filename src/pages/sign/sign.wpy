@@ -1,0 +1,635 @@
+<style lang="less" scope>
+  .userinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .userinfo-avatar {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+  }
+  .userinfo-nickname {
+    color: #aaa;
+  }
+  .video-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 250rpx;
+  }
+  .btn-area {
+    width: 100%;
+  }
+  .praise {
+    width: 100rpx;
+    height: 100rpx;
+    background-color: #ffffff;
+    margin-top: 150rpx;
+  }
+  .courage {
+    font-size: 28rpx;
+    padding: 10rpx;
+    padding-left: 30rpx;
+    width: 100%;
+    box-shadow: 1rpx 1rpx 1rpx 1rpx #f9f9f9; // background: #fafafa;
+    color: orange;
+  }
+  .article {
+    color: #26a2ff;
+    margin-top: 120rpx;
+    font-size: 28rpx;
+    text-decoration: underline;
+    padding-bottom: 5rpx;
+  }
+  .footer {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    height: 150rpx;
+    bottom: 0rpx;
+    width: 100%;
+    .confirm {
+      width: 80%;
+      background: #26a2ff;
+      color: white;
+      font-size: 30rpx;
+    }
+    .version {
+      height: 30rpx;
+      line-height: 30rpx;
+      font-size: 24rpx;
+      color: #999999;
+    }
+  }
+  .radio {
+    margin-left: 20rpx;
+    font-size: 30rpx;
+  }
+  .radio-container {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20rpx;
+  }
+  .addBtn {
+    width: 100%;
+    height: 50rpx;
+    margin-top: 10rpx;
+    text-align: center;
+    font-size: 60rpx;
+    color: #26a2ff;
+    z-index: 1200;
+    line-height: 50rpx;
+  }
+  .menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    height: 0rpx;
+    text-align: center;
+    font-size: 38rpx;
+    color: red;
+  }
+  .menu-container {
+    width: 70rpx;
+    right: 20rpx;
+    position: absolute;
+    bottom: 20rpx;
+    font-size: 38rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .movable-item {
+    height: 50rpx;
+    width: 50rpx;
+    bottom: 50rpx;
+    right: 50rpx;
+  }
+  .menu-item {
+    border-radius: 50%;
+    font-size: 16rpx;
+    width: 100%;
+    height: 70rpx;
+    text-align: center;
+    box-shadow: 5rpx 5rpx 5rpx #888888;
+  }
+  .menu-item1 {
+    background: #26a2ff;
+  }
+  .menu-item2 {
+    background: #dddddd;
+  }
+  .menu-item3 {
+    background: #eeeeee
+  }
+  .wave {
+    border: 6px solid red;
+    opacity: 0;
+    animation: waveCircle 3s ease-out;
+    animation-iteration-count: infinite;
+  }
+  page {
+    height: 100%;
+    width: 100%;
+  }
+  .ripple {
+    background-color: rgba(255, 0, 0, 0.6);
+    border-radius: 100%;
+    height: 10rpx;
+    width: 10rpx;
+    margin-top: -90px;
+    position: absolute;
+    -webkit-transform: scale(0);
+    overflow: hidden;
+    z-index: 100;
+  }
+  @-webkit-keyframes ripple {
+    100% {
+      -webkit-transform: scale(12);
+      transform: scale(12);
+      background-color: transparent;
+    }
+  }
+  .articleTitle {
+    font-size: 30rpx; // color: rgba(255, 0, 0, 1);
+    color: #26a2ff;
+    letter-spacing: 2.5rpx;
+  }
+  .articleSubTitle {
+    font-size: 26rpx; //color: rgba(255, 0, 0, 1);
+    color: #26a2ff;
+    letter-spacing: 2rpx;
+  }
+  text {
+    letter-spacing: 2rpx;
+  }
+  .tip-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #f9f9f9;
+  }
+  .latestTip {
+    padding-left: 30rpx;
+    font-size: 28rpx;
+  }
+  .tip {
+    font-size: 26rpx;
+    background: #fafafa;
+    color: red;
+  }
+  .tip-img {
+    width: 100%;
+    height: 250rpx;
+    margin-top: 10rpx;
+  }
+  .icon {
+    width: 50rpx;
+    height: 50rpx;
+  }
+  .notice-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    
+    background: #eeffee; // overflow: hidden;
+    padding: 10rpx;
+  }
+  .notice-content {
+    width: 90%;
+    height: 100%;
+    color: red;
+    font-size: 28rpx;
+    overflow: hidden;
+    margin-left: 10rpx;
+  }
+  .notice-del {
+    width: 30rpx;
+    height: 30rpx;
+    margin-right: 20rpx;
+  }
+  .root {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+  }
+  .article-delete {
+    position: absolute;
+    width: 30rpx;
+    height: 30rpx;
+    background: #26a2ff;
+    right: 0rpx;
+    top: 0rpx;
+    margin-top: -15rpx;
+    margin-right: -15rpx;
+  }
+  .swiper-item {
+    position: relative;
+    .video-play-icon {
+      left: 50%;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      position: absolute;
+      width: 130rpx;
+      height: 130rpx;
+      z-index: 10000;
+    }
+  }
+  .articleContainer {
+    display: flex;
+    position: absolute;
+    bottom: 0rpx;
+    z-index: 1000;
+    flex-direction: column; // background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    padding: 5rpx;
+    padding-left: 20rpx;
+    background-color: transparent;
+  }
+</style>
+
+<template>
+  <view class="root">
+    <view class="ripple" style="{{rippleStyle}}"></view>
+    <movable-area style="height: 100%;width: 100%;">
+      <scroll-view class="scroll-view" scroll-y style="height:100%;width:100%">
+        <view class="home-container">
+          <!-- 轮播图 -->
+          <swiper wx-if="{{showSwiper==1}}" bindchange="swiperChange" style="height:300rpx;width:100%" indicator-dots="{{true}}" autoplay="{{false}}" interval="{{5000}}" duration="{{1000}}" circular="{{true}}">
+            <repeat for="{{swiperList}}" key="index" index="index" item="item">
+              <swiper-item class="swiper-item" id="{{index}}" bindtap="onSwiperTap">
+                <image class="slide-image" style=" background:url({{item.picUrl}});background-repeat: no-repeat;width:100%;height:100%" />
+                <image wx-if="{{item.type==2}}" src="../../asset/imgs/play.png" class="video-play-icon" />
+                <view wx-show="{{isShowArticle}}" class="articleContainer">
+                  <view wx-if="{{false}}" class="article-delete"></view>
+                  <text class="articleTitle" bindtap="onDeleteArticle">{{item.title}}</text>
+                  <text class="articleSubTitle">{{item.subTitle}}</text>
+                </view>
+              </swiper-item>
+            </repeat>
+          </swiper>
+          <image class="tip-img" mode="scaleToFill" src="{{homePicUrl}}" bindtap="previewImage" />
+          <!-- 公告 -->
+          <view wx-if="{{showNotice==1}}" class="notice-layout">
+            <image class="icon" mode="aspectFit" src="../../asset/imgs/notice.png" />
+            <text class="notice-content">{{notice}}</text>
+            <image class="icon .notice-del" bindtap="onDeleteNotice" mode="aspectFit" src="../../asset/imgs/error_red.png" />
+          </view>
+          <!-- 一共签到的天数和最近三天未签到提醒 -->
+          <view class="tip-container">
+            <view wx-if="{{true}}" class="latestTip">
+              <text class="tip" wx-if="{{latestSignTip!=''}}">{{latestSignTip}} </text>
+            </view>
+            <text class="courage" wx-if="{{isShowCourage}}">{{couragementTip}}</text>
+          </view>
+        </view>
+        <view class="footer">
+          <!-- 签到按钮 -->
+          <button class="confirm material-design" bindtap="onConfirm">去签到吧</button>
+          <text class="version">版本号 2.1.0</text>
+        </view>
+      </scroll-view>
+      <movable-view direction="all" x="{{initX}}" y="{{initY}}" bindchange="onChange" class="movable-item">
+        <view class="menu-container">
+          <view class="menu" animation="{{animationMenuData}}">
+            <image mode="aspectFit" src="../../asset/imgs/gonggao.svg" class="menu-item1 menu-item" bindtouchstart="containerTap" id="menu-item1" />
+            <image class="menu-item2 menu-item" src="../../asset/imgs/fankui.svg" bindtouchstart="containerTap" id="menu-item2" />
+            <image wx-if="{{showMessageBoard==1}}" class="menu-item3 menu-item" src="../../asset/imgs/liuyan.svg" bindtouchstart="containerTap" id="menu-item3" />
+            <image wx-if="{{true}}" class="menu-item3 menu-item" src="../../asset/imgs/about.svg" bindtouchstart="containerTap" id="menu-item4" />
+          </view>
+          <view class="addBtn iconfont icon-jiahao" @tap="onTapAddBtn" animation="{{animationData}}"></view>
+        </view>
+      </movable-view>
+    </movable-area>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '../../js/url.js'
+  import utils from '@/js/utils.js'
+  import Icon from '../../components/icon'
+  export default class Index extends BasePage {
+    config = {
+      'navigationBarTitleText': '签到',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark',
+      usingComponents: {}
+    }
+    components = {
+      icon: Icon,
+    }
+    data = {
+      canIUse: wx.canIUse('button.open-type.getUserInfo'),
+      latestSignTip: "",
+      couragementTip: "",
+      isChecked: false,
+      articleTitle: "这是文章标题 ",
+      articleSubTitle: "这个是文章自标题",
+      homePicUrl: "",
+      notice: "",
+      //以下是与动画相关
+      animationData: {},
+      isRotate: false,
+      isExpand: false,
+      x: 0,
+      y: 0,
+      initX: 0,
+      initY: 0,
+      menuHeight: "280rpx",
+      showArticle: false,
+      swiperList: [],
+      showSwiper: 0,
+      showNotice: 0,
+      showMessageBoard: 2,
+      about: ""
+    }
+    computed = {
+      isShowCourage() {
+        return !utils.isEmpty(this.couragementTip)
+      },
+      isShowArticle() {
+        return this.showArticle;
+      }
+    }
+    methods = {
+      onConfirm(res) {
+        console.log("onconnnfff")
+        wx.navigateTo({
+          url: './submit?isResign=2'
+        })
+        // wx.navigateTo({
+        //   url: '../stat/charts'
+        // })
+      },
+      onDeleteArticle() {
+        this.showArticle = false;
+      },
+      onDeleteNotice() {
+        this.showNotice = 0;
+        wx.setStorageSync("showNotice", 0)
+      },
+      onSeeArticle() {
+        let that = this;
+        if (typeof(this.dayArticle) == "number") {
+          wx.navigateTo({
+            url: '../info/infoDetail?id=' + that.dayArticle
+          })
+        } else if (this.dayArticle.indexOf("http") != -1) {}
+      },
+      onSwiperTap(res) {
+        console.log(res)
+        let index = res.currentTarget.id;
+        let item = this.swiperList[index]
+        if (item.type == 1) {
+          wx.navigateTo({
+            url: '../info/infoDetail?id=' + item.articleId
+          })
+        } else {
+          wx.navigateTo({
+            url: '../commen/video?videoUrl=' + item.videoUrl
+          })
+        }
+      },
+      previewImage() {
+        let that = this;
+        console.log("previewImage")
+        wx.previewImage({
+          current: that.homePicUrl, // 当前显示图片的http链接
+          urls: [that.homePicUrl] // 需要预览的图片http链接列表
+        })
+      },
+      onTapAddBtn(res) {
+        this.toggleAnimation();
+        this.toggleMenuHeight();
+      },
+      onChange(e) {
+        this.x = e.detail.x;
+        this.y = e.detail.y;
+      },
+      containerTap: function(res) {
+        console.log(res)
+        this.showWave(res)
+        if (res.currentTarget.id == "menu-item1") {
+          wx.showModal({
+            title: '公告',
+            content: wx.getStorageSync("notice"),
+            showCancel: false,
+          })
+        }
+        if (res.currentTarget.id == "menu-item2") {
+          wx.navigateTo({
+            url: `../index/FeedBack`
+          })
+          return
+        }
+        if (res.currentTarget.id == "menu-item3") {
+          wx.navigateTo({
+            url: `../index/MessageBoard`
+          })
+          return;
+        }
+        if (res.currentTarget.id == "menu-item4") {
+          let that = this;
+          wx.navigateTo({
+            url: `../info/infoDetail?content=${that.about} `
+          })
+          return
+        }
+      }
+    }
+    events = {}
+    showWave(res) {
+      var that = this
+      var x = res.touches[0].pageX;
+      var y = res.touches[0].pageY + 85;
+      this.setData({
+        rippleStyle: ''
+      });
+      setTimeout(function() {
+        that.setData({
+          rippleStyle: 'top:' + y + 'px;left:' + x + 'px;-webkit-animation: ripple 0.4s linear;animation:ripple 0.4s linear;'
+        });
+      }, 200)
+    }
+    onLoad() {
+      this.login();
+      this.getExtraInfo();
+      this.getSwiperInfo();
+      this.createAnimation();
+      this.showNotice = wx.getStorageSync("showNotice", 2)
+      let that = this;
+      let screenW = wx.getStorageSync("movable_view_x")
+      let screenH = wx.getStorageSync("movable_view_y")
+      if (screenH == 0 && screenW == 0) {
+        wx.getSystemInfo({
+          success: function(res) {
+            that.initX = res.windowWidth;
+            that.initY = res.windowHeight;
+            that.$apply()
+          }
+        })
+        return
+      }
+      this.initX = screenW;
+      this.initY = screenH
+    }
+    onUnload() {
+      wx.setStorageSync("movable_view_x", this.x)
+      wx.setStorageSync("movable_view_y", this.y)
+    }
+    onHide() {
+      wx.setStorageSync("movable_view_x", this.x)
+      wx.setStorageSync("movable_view_y", this.y)
+    }
+    onShow() {
+      let sign_refresh = wx.getStorageSync("sign_refresh");
+      if (sign_refresh == "1") { //完善信息之后页面要刷新
+        this.login();
+        wx.setStorageSync("sign_refresh", 2);
+      }
+    }
+    toggleAnimation() {
+      if (!this.isRotate) {
+        this.animation.rotate(45).step()
+        this.setData({
+          animationData: this.animation.export()
+        })
+        this.isRotate = true
+      } else {
+        this.animation.rotate(0).step()
+        this.setData({
+          animationData: this.animation.export()
+        })
+        this.isRotate = false
+      }
+    }
+    toggleMenuHeight() {
+      if (!this.isExpand) {
+        this.animationMenu.height(this.menuHeight).step()
+        this.setData({
+          animationMenuData: this.animationMenu.export()
+        })
+        this.isExpand = true;
+      } else {
+        this.animationMenu.height(0).step()
+        this.setData({
+          animationMenuData: this.animationMenu.export()
+        })
+        this.isExpand = false;
+      }
+    }
+    createAnimation() {
+      var animation = wx.createAnimation({
+        //transformOrigin: "50% 50%",
+        duration: 500,
+        timingFunction: "ease",
+        delay: 0
+      })
+      this.animation = animation
+      var animationMenu = wx.createAnimation({
+        //transformOrigin: "50% 50%",
+        duration: 500,
+        timingFunction: "ease",
+        delay: 0
+      })
+      this.animationMenu = animationMenu
+    }
+    //请求咨询详情
+    reqMainInfo() {
+      let userid = wx.getStorageSync("userId")
+      let that = this;
+      request.post(api.ApiSignQuery, {
+        queryFlag: 4
+      }).then((data) => {
+        console.log(data);
+        let obj = data.datas.obj;
+        that.latestSignTip = obj.latestSignTip;
+        that.couragementTip = obj.couragementTip
+        that.$apply();
+      })
+    }
+    getExtraInfo() {
+      let that = this;
+      request.post(api.ApiExtraInfo).then((data) => {
+        console.log(data);
+        let obj = data.datas.obj;
+        wx.setStorageSync("extra", obj)
+        that.isChecked = obj.isChecked
+        that.dayArticle = obj.dayArticle
+        that.dayArticleTitle = obj.dayArticleTitle
+        that.homePicUrl = obj.homePicUrl
+        that.notice = obj.notice
+        let notice = wx.getStorageSync("notice")
+        if (notice != obj.notice && obj.showNotice == 1) {
+          that.showNotice == 1
+          wx.setStorageSync("notice", obj.notice)
+          wx.setStorageSync("showNotice", 1)
+        }
+        if (obj.showNotice != 1) {
+          that.showNotice == 2
+          wx.setStorageSync("notice", obj.notice)
+          wx.setStorageSync("showNotice", 2)
+        }
+        that.showNotice = wx.getStorageSync("showNotice");
+        that.showSwiper = obj.showSwiper
+        that.showMessageBoard = obj.showMessageBoard
+        wx.setStorageSync("about", obj.about)
+        that.about = obj.about
+        that.$apply();
+      })
+    }
+    getSwiperInfo() {
+      let that = this;
+      request.post(api.ApiSwiperInfo).then((data) => {
+        console.log(data);
+        that.swiperList = data.datas.list;
+        that.$apply();
+      })
+    }
+    login() {
+      let that = this;
+      wx.login({
+        success: function(res) {
+          let param = {
+            code: res.code
+          }
+          //用户没有完善信息，会被拦截并将userid保存在本地，并且跳转到完善信息用户界面
+          console.log(res)
+          request.post(api.ApiLogin, param)
+            .then((data) => {
+              try {
+                if (data.datas.userId) {
+                  wx.setStorageSync("userId", data.datas.userId)
+                  console.log("-----userid---")
+                   console.log(data.datas.userId)
+                } else {
+                  wx.setStorageSync("userId", data.datas.fullUserInfo.userId)
+                  wx.setStorageSync("fullUserInfo", data.datas.fullUserInfo)
+                   console.log("-----userid---")
+                   console.log(data.datas.fullUserInfo.userId)
+                }
+                that.reqMainInfo();
+              } catch (e) {
+                console.log(e);
+              }
+            }).catch((e) => {
+              console.log(e)
+            })
+        }
+      })
+    }
+  }
+</script>

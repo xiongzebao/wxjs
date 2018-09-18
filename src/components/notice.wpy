@@ -1,0 +1,38 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="panel">
+    <text ></text>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Panel extends wepy.component {
+    props = {
+      num: {
+        type: [Number, String],
+        coerce: function (v) {
+          return +v
+        },
+        default: 50
+      }
+    }
+
+    data = {
+    }
+    events = {
+    
+    }
+
+    watch = {
+    
+    }
+
+    methods = {
+   
+    }
+
+  }
+</script>

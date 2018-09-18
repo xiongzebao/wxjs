@@ -1,0 +1,62 @@
+
+<template>
+  <view class="DocumentItem">
+    <text class="message-content">{{item.nickName}}</text>
+  </view>
+
+</template>
+
+
+<style>
+  .DocumentItem {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+  }
+  .message-content{
+    font-size: 28rpx;
+    color: #666666;
+    margin-left: 50rpx;
+  }
+</style>
+<script>
+  import wepy from 'wepy'
+ 
+  export default class MessageBoardItem extends wepy.component {
+    props = {
+      item: {
+        type: Object
+      },
+      clickItem: {
+        type: Function
+      }
+    }
+    components = {
+ 
+    }
+    computed={
+      userHeader:()=>{
+
+        return {nickName:"pp"+this.item.nickName}
+      }
+    }
+    data = {
+    }
+    onLoad() {
+      console.log("onliad")
+      console.log(this.item)
+    }
+    methods = {
+      click() {
+        this.clickItem && this.clickItem(this.item)
+      },
+      clickCancel() {
+        this.clickCancelHandle && this.clickCancelHandle(this.item)
+      }
+    }
+  }
+</script>
+
+
+

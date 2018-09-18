@@ -1,0 +1,186 @@
+<style lang="less">
+  .msg-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    padding: 10rpx;
+  }
+  .message-confirm {
+    width: 70%;
+    background: #26a2ff;
+    color: white;
+    font-size: 26rpx;
+    margin-top: 20rpx;
+  }
+  .phclass {
+    font-size: 25rpx;
+  }
+  .note-input {
+    width: 95%;
+    height: 200rpx;
+    border: 1rpx solid #b1b1b1;
+    font-size: 25rpx;
+    padding: 10rpx;
+    border-radius: 20rpx;
+  }
+  .contact-input {
+    width: 100%;
+    height: 40rpx;
+  }
+  .message-content {
+    font-size: 28rpx;
+    color: #333333;
+    margin-left: 45rpx;
+  }
+  .item-container {
+    margin-top: 20rpx;
+  }
+  .item-header {
+    display: flex;
+    flex-direction: row;
+  }
+  .praise-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  .msg-loading{
+    width: 80rpx;
+    height: 80rpx;
+  }
+  .loading-container{
+     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10rpx;
+  }
+</style>
+
+<template>
+  <view class="msg-container">
+    <textarea class="note-input" bindinput="onInput" placeholder="在这里输入留言" maxlength="50" placeholder-class="phclass" value="{{feedback}}" />
+    <button class="message-confirm" bindtap="onConfirm">提交</button>
+    <scroll-view id="scroll-view" scroll-y scroll-with-animation scroll-into-view="{{intoViewID}}" scroll-top="{{currentScrollTop}}" bindscroll="bindscroll" style="{{defaultStyle+style}}" bindscrolltolower="bindscrolltolower" lower-threshold="100">
+      <view wx-if="{{showLoading}}" class="loading-container" id="header">
+        <image wx-if="{{showLoading}}" mode="aspectFit"  class="msg-loading"  src="../../asset/imgs/loading_spinner.gif" />
+      </view>
+      <repeat for="{{list}}" slot="subView" key="index" index="index" item="item">
+        <view class="item-container">
+          <view class="item-header">
+            <UserHeader :item="item"  ></UserHeader>
+            <view wx-if="{{false}}" class="praise-container">
+              <image style="width:60rpx;height:60rpx" src="../../asset/imgs/notice.png" /><text style="width:60rpx;height:60rpx">13</text></view>
+          </view>
+          <text class="message-content">{{item.content}}</text>
+        </view>
+      </repeat>
+      <view class="header" hidden="{{true}}">
+        <image wx:if="{{isHasMoreData}}" mode="aspectFit" src="../../asset/imgs//loading_spinner.gif" />
+        <text wx:else>已加载全部</text>
+      </view>
+ 
+  </scroll-view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import dayjs from 'dayjs'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '../../js/url.js'
+  import InterfaceUtils from '../../js/InterfaceUtils'
+  import MessageBoardItem from './MessageBoardItem'
+  import ListView from '../../components/ListView'
+  import UserHeader from './UserHeader'
+  export default class Index extends BasePage {
+    config = {
+      'navigationBarTitleText': '留言',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {
+      ListView,
+      UserHeader
+    }
+    data = {
+      feedback: "",
+      contact: "",
+      showLoading: true,
+      footerHidden: true,
+      list: [],
+      refreshHandle: () => {
+        console.log("refreshHandle")
+        //this.$invoke('ListView', 'endRefresh')
+      },
+      getMoreData: () => {
+        console.log("getMoreData")
+      }
+    }
+    computed = {}
+    methods = {
+     
+      bindtouchend() {
+        console.log("bindtouchend")
+      },
+      radioChange(e) {
+        this.signState = e.detail.value;
+      },
+      onConfirm() {
+        let that = this
+        let userInfo = wx.getStorageSync("fullUserInfo");
+        let data = {
+          userId: userInfo.userId,
+          nickName: userInfo.nickName,
+          content: this.feedback,
+          avatarUrl: userInfo.avatarUrl,
+          level: userInfo.level,
+        }
+        request.post(api.ApiAddMsg, data)
+          .then((data) => {
+            console.log(data)
+            setTimeout(() => {
+              InterfaceUtils.showToast("提交成功");
+            }, 1000)
+            that.reqMsg()
+          })
+          .catch((e) => {
+            InterfaceUtils.showToast(e.message);
+          });
+      },
+      onInput(e) {
+        this.feedback = e.detail.value;
+      },
+      onContactInput(e) {
+        this.contact = e.detail.value;
+      }
+    }
+    onLoad(option) {
+      this.reqMsg();
+    }
+    reqMsg() {
+      let that = this;
+      this.showLoading = true
+      request.post(api.ApiGetMsg)
+        .then((data) => {
+          console.log(data)
+          that.showLoading = false
+          that.$apply();
+          setTimeout(() => {
+            that.list = data.datas.list;
+            console.log(that.list)
+            that.$apply();
+          }, 500)
+        })
+        .catch((e) => {
+          InterfaceUtils.showToast(e.message);
+        });
+    }
+  }
+</script>

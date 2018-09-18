@@ -1,0 +1,116 @@
+<style lang="less">
+  @import "../weui.wxss";
+  .container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+</style>
+
+<script>
+  import wepy from 'wepy'
+  import 'wepy-async-function'
+  import {
+    setStore
+  } from 'wepy-redux'
+  import configStore from './store'
+  import appConfig from './js/config.js'
+  import InterfaceUtils from './js/InterfaceUtils.js'
+  import request from './js/NetUtils.js'
+  import api from './js/url.js'
+  const store = configStore()
+  setStore(store)
+  console.log("appConfig")
+  console.log(appConfig)
+  export default class extends wepy.app {
+    config = {
+      pages: [
+        'pages/sign/sign',
+        'pages/sign/submit',
+        "pages/stat/stat",
+        "pages/stat/charts",
+         "pages/stat/ranklist",
+        "pages/index/completeUserInfo",
+        "pages/commen/video",
+        "pages/index/readMe",
+        "pages/index/Me",
+        "pages/index/FeedBack",
+        "pages/index/MessageBoard",
+        "pages/info/infoList2",
+        "pages/info/infoDetail"
+      ],
+      "tabBar": {
+        color: "#333333",
+        // selectedColor: this.getAppConfig.appColor.selTextColor,
+        selectedColor: "#26a2ff",
+        backgroundColor: "#ffffff",
+        "list": [{
+            "pagePath": "pages/sign/sign",
+            "text": "签到",
+            "iconPath": "./asset/imgs/sign.png",
+            "selectedIconPath": "./asset/imgs/sign_sel.png"
+          },
+        
+          {
+            "pagePath": "pages/stat/stat",
+            "text": "统计",
+            "iconPath": "./asset/imgs/stat.png",
+            "selectedIconPath": "./asset/imgs/stat_sel.png"
+          },
+          {
+              "pagePath": "pages/index/Me",
+              "text": "我的",
+              "iconPath": "./asset/imgs/me.png",
+              "selectedIconPath": "./asset/imgs/me_sel.png"
+          },
+        ]
+      },
+      window: {
+        backgroundTextStyle: 'light',
+        navigationBarBackgroundColor: '#000000',
+        navigationBarTitleText: 'WeChat',
+        navigationBarTextStyle: 'black'
+      }
+    }
+    data = {
+      color: "#ffff00"
+    }
+    globalData = {
+      userInfo: null,
+      fullUserInfo: null,
+      appConfig: appConfig,
+    }
+    computed = {
+      getAppConfig() {
+        console.log(appConfig);
+        return appConfig;
+      }
+    }
+    constructor() {
+      super()
+      this.use('requestfix')
+    }
+    onLaunch() {
+      this.onLoad();
+    }
+    getFullUserInfo() {
+      return this.globalData.fullUserInfo;
+    }
+    onLoad() {
+    }
+    //获取获取微信的userInfo
+    onError(e) {
+      console.log("发生错误");
+      InterfaceUtils.showToast("错误操作失败");
+      let data = {
+        errorInfo: e,
+        errorType: 1,
+        errorCode: 500
+      }
+      request.post(api.ApiError, data);
+    }
+  }
+</script>
