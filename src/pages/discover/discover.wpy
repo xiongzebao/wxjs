@@ -1,0 +1,118 @@
+<style lang="less">
+.discover-root{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+}
+  .discover-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    .discover-item {
+      border: 0rpx solid darkgray;
+      display: flex;
+      flex-direction: column;
+      width: 150rpx;
+      height: 200rpx;
+      flex-grow: 1;
+      justify-content: center;
+      align-items:  center;
+      .discover-item-image {
+        width: 80rpx;
+        height: 80rpx;
+      }
+      .discover-item-text {
+        font-size: 26rpx;
+        color: #666666;
+        margin-top: 20rxp;
+        padding-top: 20rpx;
+      }
+    }
+  }
+
+  .discover-divider{
+    height: 0rpx;
+    width: 100%;
+    background: #efefef
+  }
+</style>
+
+<template>
+
+  <view class="discover-root">
+  <view class="discover-container">
+    <view class="discover-item" bindtap="onRankList">
+      <image src="../../asset/imgs/paihangbang.png" class="discover-item-image" />
+      <text class="discover-item-text">签到排行榜</text>
+    </view>
+    <view class="discover-item" bindtap="onMessageBoard">
+      <image src="../../asset/imgs/liuyanban.png" class="discover-item-image" />
+      <text class="discover-item-text">留言板</text>
+    </view>
+    <view class="discover-item" bindtap="onMessageBoard">
+      <image src="../../asset/imgs/mubiao.png" class="discover-item-image" />
+      <text class="discover-item-text">立标</text>
+    </view>
+     <!-- <view class="discover-item" bindtap="onMessageBoard">
+      <image src="../../asset/imgs/quanzi.png" class="discover-item-image" />
+      <text class="discover-item-text">戒友圈</text>
+    </view> -->
+  
+  </view>
+
+
+  <view class="discover-divider"></view>
+  <view class="discover-container">
+    
+    <view class="discover-item" bindtap="onMessageBoard">
+      <image src="../../asset/imgs/info.png" class="discover-item-image" />
+      <text class="discover-item-text">图文</text>
+    </view>
+    <view class="discover-item" bindtap="onMessageBoard">
+      <image src="../../asset/imgs/video.png" class="discover-item-image" />
+      <text class="discover-item-text">视频</text>
+    </view>
+  </view>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '发现',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark',
+      usingComponents: {}
+    }
+    components = {}
+    data = {}
+    computed = {
+      now() {
+        return +new Date()
+      }
+    }
+    methods = {
+      onRankList() {
+        wx.navigateTo({
+          url: `../stat/ranklist`
+        })
+      },
+      onMessageBoard() {
+        wx.navigateTo({
+          url: `../index/MessageBoard`
+        })
+      }
+    }
+    events = {}
+    onLoad() {}
+  }
+</script>

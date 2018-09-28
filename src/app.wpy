@@ -40,7 +40,8 @@
         "pages/index/FeedBack",
         "pages/index/MessageBoard",
         "pages/info/infoList2",
-        "pages/info/infoDetail"
+        "pages/info/infoDetail",
+        "pages/discover/discover"
       ],
       "tabBar": {
         color: "#333333",
@@ -49,9 +50,9 @@
         backgroundColor: "#ffffff",
         "list": [{
             "pagePath": "pages/sign/sign",
-            "text": "签到",
-            "iconPath": "./asset/imgs/sign.png",
-            "selectedIconPath": "./asset/imgs/sign_sel.png"
+            "text": "首页",
+            "iconPath": "./asset/imgs/home.png",
+            "selectedIconPath": "./asset/imgs/home_sel.png"
           },
         
           {
@@ -59,6 +60,12 @@
             "text": "统计",
             "iconPath": "./asset/imgs/stat.png",
             "selectedIconPath": "./asset/imgs/stat_sel.png"
+          },
+          {
+            "pagePath": "pages/discover/discover",
+            "text": "发现",
+            "iconPath": "./asset/imgs/discover.png",
+            "selectedIconPath": "./asset/imgs/discover_sel.png"
           },
           {
               "pagePath": "pages/index/Me",

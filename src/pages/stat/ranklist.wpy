@@ -94,7 +94,7 @@
       this.maxNumber = list[0].signNum
       for (let i = 0; i < list.length; i++) {
         let item = list[i];
-        let color = 'blue';
+        let color = '#26a2ff';
         if (item.riseFlag == 2) {
           color = 'red';
         } else if (item.riseFlag == 3) {

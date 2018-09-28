@@ -148,7 +148,7 @@
         let that = this;
         wx.showModal({
           title: '提示',
-          content: '确定要修改用户昵称(修改只对此小程序有效)?',
+          content: '确定要修改用户昵称?(修改只对此小程序有效)',
           success: function(res) {
             if (res.confirm) {
               that.editNickName(true)
@@ -176,7 +176,7 @@
         let that = this;
         wx.showModal({
           title: '提示',
-          content: '确定要更改用户图像(修改只对此小程序有效)?',
+          content: '确定要更改用户图像?(修改只对此小程序有效)',
           success: function(res) {
             if (res.confirm) {
               wx.chooseImage({

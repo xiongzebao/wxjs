@@ -68,7 +68,7 @@
       <text class="comment" wx-if="{{showComment}}">{{comment}}</text>
       <text @tap="goSign" wx-if="{{showSign}}" class="sign">{{signTip}}</text>
     </view>
-    <view class="menu">
+    <view class="menu" wx-if="{{false}}">
       <text class="menu-item1 menu-item" bindtouchstart="containerTap" id="menu-item1">排行榜</text>
       <text class="menu-item2 menu-item" bindtouchstart="containerTap" id="menu-item2">月统计</text>
       <text class="menu-item3 menu-item" bindtouchstart="containerTap" id="menu-item3">分析</text>
