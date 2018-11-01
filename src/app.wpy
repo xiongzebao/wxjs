@@ -29,15 +29,18 @@
     config = {
       pages: [
         'pages/sign/sign',
+        'pages/sign/signDetail',
         'pages/sign/submit',
         "pages/stat/stat",
         "pages/stat/charts",
-         "pages/stat/ranklist",
+        "pages/stat/ranklist",
         "pages/index/completeUserInfo",
         "pages/commen/video",
         "pages/index/readMe",
         "pages/index/Me",
         "pages/index/FeedBack",
+        "pages/index/spirit",
+        "pages/index/Users",
         "pages/index/MessageBoard",
         "pages/info/infoList2",
         "pages/info/infoDetail",
@@ -54,7 +57,6 @@
             "iconPath": "./asset/imgs/home.png",
             "selectedIconPath": "./asset/imgs/home_sel.png"
           },
-        
           {
             "pagePath": "pages/stat/stat",
             "text": "统计",
@@ -68,10 +70,10 @@
             "selectedIconPath": "./asset/imgs/discover_sel.png"
           },
           {
-              "pagePath": "pages/index/Me",
-              "text": "我的",
-              "iconPath": "./asset/imgs/me.png",
-              "selectedIconPath": "./asset/imgs/me_sel.png"
+            "pagePath": "pages/index/Me",
+            "text": "我的",
+            "iconPath": "./asset/imgs/me.png",
+            "selectedIconPath": "./asset/imgs/me_sel.png"
           },
         ]
       },
@@ -106,8 +108,7 @@
     getFullUserInfo() {
       return this.globalData.fullUserInfo;
     }
-    onLoad() {
-    }
+    onLoad() {}
     //获取获取微信的userInfo
     onError(e) {
       console.log("发生错误");

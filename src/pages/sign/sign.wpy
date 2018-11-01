@@ -198,17 +198,8 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    
     background: #eeffee; // overflow: hidden;
     padding: 10rpx;
-  }
-  .notice-content {
-    width: 90%;
-    height: 100%;
-    color: red;
-    font-size: 28rpx;
-    overflow: hidden;
-    margin-left: 10rpx;
   }
   .notice-del {
     width: 30rpx;
@@ -253,11 +244,74 @@
     padding-left: 20rpx;
     background-color: transparent;
   }
+  .notice-bg {
+    background-color: #eee;
+    margin: 15rpx;
+    border-radius: 10rpx;
+    padding: 15rpx;
+  }
+  .notice-content {
+    width: 90%;
+    height: 100%;
+    color: black;
+    font-size: 28rpx;
+    overflow: hidden;
+    margin-left: 10rpx;
+  }
+  .sidebar {
+    background-color: #eeeeee;
+    width: 170rpx;
+    height: 60rpx;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    top: 470rpx;
+    right: 0rpx;
+    z-index: 2000;
+    border-top-left-radius: 30rpx;
+    border-bottom-left-radius: 30rpx;
+    border: 1rpx solid #99999999;
+  }
+  .sign-avatar {
+    width: 50rpx;
+    height: 50rpx;
+    margin-left: 10rpx;
+    border-radius: 50%;
+  }
+  .sidebar-arrow {
+    width: 30rpx;
+    height: 30rpx;
+  }
+  .user-avatars-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .avatarItem {
+    width: 70rpx;
+    height: 70rpx;
+    margin-right: -20rpx;
+    border-radius: 50%;
+  }
+  .avatar-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+  }
 </style>
 
 <template>
   <view class="root">
     <view class="ripple" style="{{rippleStyle}}"></view>
+    <view class="sidebar" bindtap="onSignDetail">
+      <image class="sign-avatar" src="{{avatarUrl}}" />
+      <text style="font-size:25rpx;color:orange;margin-left:10rpx;margin-right:5rpx">{{signDays}}</text>
+      <text style="font-size:25rpx;">天 </text>
+      <image class="sidebar-arrow" src="../../asset/imgs/jiantou.png"/>
+    </view>
     <movable-area style="height: 100%;width: 100%;">
       <scroll-view class="scroll-view" scroll-y style="height:100%;width:100%">
         <view class="home-container">
@@ -276,14 +330,30 @@
             </repeat>
           </swiper>
           <image class="tip-img" mode="scaleToFill" src="{{homePicUrl}}" bindtap="previewImage" />
-          <!-- 公告 -->
-          <view wx-if="{{showNotice==1}}" class="notice-layout">
-            <image class="icon" mode="aspectFit" src="../../asset/imgs/notice.png" />
-            <text class="notice-content">{{notice}}</text>
-            <image class="icon .notice-del" bindtap="onDeleteNotice" mode="aspectFit" src="../../asset/imgs/error_red.png" />
+          <view class="avatar-layout" bindtap="onSeeAllUsers">
+            <view>
+              <text style="font-size:28rpx;color:#333333">共</text>
+              <text style="font-size:28rpx;color:orange">1234</text>
+              <text style="font-size:28rpx;color:#333333">个圈友</text>
+            </view>
+            <view class="user-avatars-container">
+              <repeat for="{{avatarlist}}" key="index" index="index" item="item">
+                <image src="{{avatarUrl}}" class="avatarItem" />
+              </repeat>
+            </view>
+            <image src="../../asset/imgs/more.png" class="avatarItem" />
           </view>
+          <!-- 公告 -->
+          <!-- <view wx-if="{{showNotice==1}}" class="notice-layout">
+                          <image class="icon" mode="aspectFit" src="../../asset/imgs/notice.png" />
+                          <text>通知</text>
+                          <image class="icon .notice-del" bindtap="onDeleteNotice" mode="aspectFit" src="../../asset/imgs/error_red.png" />
+                        </view> -->
+          <!-- <view class="notice-bg">
+                        <text class="notice-content">{{notice}}</text>
+                        </view> -->
           <!-- 一共签到的天数和最近三天未签到提醒 -->
-          <view class="tip-container">
+          <view  wx-if="{{false}}" class="tip-container">
             <view wx-if="{{true}}" class="latestTip">
               <text class="tip" wx-if="{{latestSignTip!=''}}">{{latestSignTip}} </text>
             </view>
@@ -354,7 +424,8 @@
       showSwiper: 0,
       showNotice: 0,
       showMessageBoard: 2,
-      about: ""
+      about: "",
+      avatarlist: []
     }
     computed = {
       isShowCourage() {
@@ -362,11 +433,17 @@
       },
       isShowArticle() {
         return this.showArticle;
+      },
+      avatarUrl() {
+        let userinfo = wx.getStorageSync("fullUserInfo")
+        return userinfo.avatarUrl;
+      },
+      signDays() {
+        return 67;
       }
     }
     methods = {
       onConfirm(res) {
-        console.log("onconnnfff")
         wx.navigateTo({
           url: './submit?isResign=2'
         })
@@ -448,7 +525,19 @@
           })
           return
         }
+      },
+      onSignDetail() {
+        wx.navigateTo({
+          url: './signDetail'
+        })
+      },
+      onSeeAllUsers(){
+         wx.navigateTo({
+            url: `../index/Users`
+          })
+          return
       }
+
     }
     events = {}
     showWave(res) {
@@ -485,6 +574,13 @@
       }
       this.initX = screenW;
       this.initY = screenH
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
+      this.avatarlist.push("../../asset/imgs/play.png")
     }
     onUnload() {
       wx.setStorageSync("movable_view_x", this.x)
@@ -589,6 +685,24 @@
         wx.setStorageSync("about", obj.about)
         that.about = obj.about
         that.$apply();
+
+
+        if (wx.getStorageSync("showNotice") == 1) {
+          wx.showModal({
+            title: '公告',
+            content:  wx.getStorageSync("notice"),
+            showCancel: false,
+            confirmText: "我知道了",
+            success(res) {
+              if (res.confirm) {
+                that.showNotice = 0;
+                wx.setStorageSync("showNotice", 0)
+              } else if (res.cancel) {}
+            }
+          })
+        }
+
+
       })
     }
     getSwiperInfo() {
@@ -614,12 +728,12 @@
                 if (data.datas.userId) {
                   wx.setStorageSync("userId", data.datas.userId)
                   console.log("-----userid---")
-                   console.log(data.datas.userId)
+                  console.log(data.datas.userId)
                 } else {
                   wx.setStorageSync("userId", data.datas.fullUserInfo.userId)
                   wx.setStorageSync("fullUserInfo", data.datas.fullUserInfo)
-                   console.log("-----userid---")
-                   console.log(data.datas.fullUserInfo.userId)
+                  console.log("-----userid---")
+                  console.log(data.datas.fullUserInfo.userId)
                 }
                 that.reqMainInfo();
               } catch (e) {

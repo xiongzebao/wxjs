@@ -5,6 +5,28 @@
     height: 60rpx;
     padding: 15rpx;
     background: #ffffff;
+    display: flex;
+    justify-content: flex-left;
+    align-items: center;
+    flex-direction: row;
+    .item-img-small {
+      width: 50rpx;
+      height: 50rpx;
+    }
+    .item-text {
+      margin-left: 20rpx;
+    }
+    .item-arrow {
+      width: 35rpx;
+      height: 35rpx;
+      flex-grow: 0;
+      margin-right: 35rpx;
+    }
+    .item-left {
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+    }
   }
   .divider {
     height: 20rpx;
@@ -12,9 +34,10 @@
     width: 100%;
   }
   .divider-small {
-    height: 4rpx;
+    height: 1rpx;
     background: #efefef;
-    width: 100%;
+    width: 97%;
+    align-self: center;
   }
   .me-container {
     display: flex;
@@ -29,6 +52,7 @@
       height: 100%;
       padding-top: 40rpx;
       padding-bottom: 40rpx;
+    background: linear-gradient(180deg, #26a2ff, white); 
     }
   }
   .me-avatar {
@@ -48,6 +72,18 @@
     font-size: 28rpx;
     margin-top: 10rpx;
   }
+  .spirit-value-normal{
+    margin-left: 40rpx;
+    font-size: 28rpx;
+    color: #26a2ff;
+  }
+   .spirit-value-exception{
+    margin-left: 40rpx;
+    margin-right: 40rpx;
+    font-size: 28rpx;
+    color:red;
+  }
+ 
 </style>
 
 <template>
@@ -56,15 +92,37 @@
       <image class="me-avatar" src="{{avatarUrl}}" bindtap="onChooseImage" />
       <input class="{{editclass}}" style="font-weight:bold;text-align: center;" bindinput="onNickNameInput" value="{{nickName}}" disabled="{{disabled}}" bindtap="onModifyNickName" />
       <text wx-if="{{!disabled}}" bindtap="onModifyCommited" class="modifyBtn">提交修改</text>
+      <text style="font-size:25rpx;margin-top:20rpx;color:#6f6f6f">点击头像和昵称可修改</text>
+    </view>
+    
+
+
+    <view class="me-item" bindtouchstart="containerTap" id="menu-item-spirit">
+      <view class="item-left">
+        <image class="item-img-small" src="../../asset/imgs/liangbei.png">
+          <text class="item-text" >精气值</text>
+          <text class="{{spiritTextClass}}">70%(偏低)</text>
+           <image class="item-arrow" src="{{faceImg}}">
+      </view>
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
+    </view>
+    <view class="divider"></view>
+    <view class="me-item" bindtouchstart="containerTap" id="menu-item-fankui">
+      <view class="item-left">
+        <image class="item-img-small" src="../../asset/imgs/fankui.png">
+          <text class="item-text" >反馈</text>
+      </view>
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
     </view>
     <view class="divider-small"></view>
-    <text class="me-item" bindtouchstart="containerTap" id="menu-item1">反馈</text>
-    <view class="divider-small"></view>
-    <text class="me-item" bindtouchstart="containerTap" id="menu-item2">关于</text>
-    <view class="divider-small"></view>
-    <text wx-if="showMsg" class="me-item" bindtouchstart="containerTap" id="menu-item3">留言</text>
-    <view wx-if="showMsg" class="divider-small"></view>
-    <text  wx-if="{{showGroup}}" class="me-item" bindtouchstart="containerTap" id="menu-item4">讨论组</text>
+    <view class="me-item" bindtouchstart="containerTap" id="menu-item-guanyu">
+      <view class="item-left">
+        <image class="item-img-small" src="../../asset/imgs/guanyu.png">
+          <text class="item-text"  >关于</text>
+      </view>
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
+    </view>
+    <text wx-if="{{showGroup}}" class="me-item" bindtouchstart="containerTap" id="menu-item4">讨论组</text>
     <view wx-if="{{showGroup}}" class="divider-small"></view>
   </view>
 </template>
@@ -88,18 +146,20 @@
     data = {
       editclass: "",
       disabled: true,
-      userinfo: {}
+      userinfo: {},
+      spiritTextClass:"spirit-value-exception",
+      faceImg:"../../asset/imgs/sad-red.png"
     }
     computed = {
-      showMsg(){
-           if(wx.getStorageSync("extra").showMessageBoard==1){
-            return true
+      showMsg() {
+        if (wx.getStorageSync("extra").showMessageBoard == 1) {
+          return true
         }
         return false
       },
-      showGroup(){
-        if(wx.getStorageSync("extra").showGroup==1){
-            return true
+      showGroup() {
+        if (wx.getStorageSync("extra").showGroup == 1) {
+          return true
         }
         return false
       },
@@ -109,6 +169,7 @@
       nickName() {
         return this.userinfo.nickName
       }
+    
     }
     editNickName(b) {
       if (b) {
@@ -197,31 +258,31 @@
         })
       },
       containerTap: function(res) {
-        if (res.currentTarget.id == "menu-item1") {
+        if (res.currentTarget.id == "menu-item-fankui") {
           wx.navigateTo({
             url: `./FeedBack`
           })
           return;
         }
-        if (res.currentTarget.id == "menu-item2") {
+        if (res.currentTarget.id == "menu-item-guanyu") {
           let about = wx.getStorageSync("about");
           wx.navigateTo({
             url: `../info/infoDetail?content= ${about} `
           })
           return
         }
-        if (res.currentTarget.id == "menu-item3") {
+        if (res.currentTarget.id == "menu-item-spirit") {
           wx.navigateTo({
-            url: `../index/MessageBoard`
+            url: `../index/spirit`
           })
           return;
         }
         if (res.currentTarget.id == "menu-item4") {
-            let group = wx.getStorageSync("extra").group
-            wx.previewImage({
-              current: group, // 当前显示图片的http链接
-              urls: [group] // 需要预览的图片http链接列表
-            })
+          let group = wx.getStorageSync("extra").group
+          wx.previewImage({
+            current: group, // 当前显示图片的http链接
+            urls: [group] // 需要预览的图片http链接列表
+          })
           return;
         }
       }

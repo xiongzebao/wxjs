@@ -1,0 +1,120 @@
+<style lang="less">
+  .container {
+    display: flex;
+  }
+  .article {
+    font-size: 25rpx;
+    margin-top: 30rpx;
+  }
+  .title {
+    font-size: 27rpx;
+    color: red;
+  }
+  .user-layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+     align-items: center;
+  }
+  .user-item {
+    display: flex;
+    flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     width: 50%;
+
+  }
+</style>
+
+<template>
+  <view class="container">
+    <text class="title"></text>
+    <text class="article"></text>
+    <view class="user-layout">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <view class="user-item">
+            <image   style="width:25rpx;height:25rpx;margin-bottom:-25rpx;margin-right:-30rpx;z-index:100" src="../../asset/imgs/sex_female.png" class="avatarItem" />
+          <image   style="width:60rpx;height:60rpx;" src="../../asset/imgs/more.png" class="avatarItem" />
+          <text style="">{{item.nickName}}</text>
+           <text> {{item.signDays}}天</text>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '@/pages/BasePage'
+  import request from '../../js/NetUtils.js'
+  import {
+    ApiComInfo
+  } from '../../js/url.js'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '圈友',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {
+      list: []
+    }
+    computed = {
+      now() {
+        return +new Date()
+      }
+    }
+    methods = {}
+    events = {}
+    onLoad() {
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiongfdsf",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiongffdfsdf",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+      this.list.push({
+        nickName: "xiaoxiong",
+        signDays: 78
+      })
+    }
+  }
+</script>

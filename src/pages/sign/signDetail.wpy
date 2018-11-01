@@ -1,0 +1,173 @@
+<style lang="less">
+  page {
+    width: 100%;
+    height: 100%;
+  }
+  .container {
+    background-color: #efefef;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+  }
+  .tablayout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    background-color: #fff;
+  }
+  .tabSelectClass {
+    border-bottom-color: #26a2ff;
+    color: #26a2ff;
+  }
+  .tabNormalClass {
+    color: #333333;
+    border-bottom-color: white;
+  }
+  .tab-item {
+    text-align: center;
+    width: 150rpx;
+    font-size: 32rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    border-bottom-width: 6rpx;
+    border-bottom-style: solid;
+  }
+  .content {
+    width: 100%;
+    background-color: #efefef;
+    margin-top: 20rpx;
+  }
+  .time-shaft {
+    display: flex;
+    flex-direction: row;
+  }
+  .time-shaft-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20rpx;
+    margin-left: 20rpx;
+  }
+  .time-shaft-left-circle1 {
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 50%;
+    border: 1rpx #333333 solid;
+  }
+  .time-shaft-left-circle2 {
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 50%;
+    background-color: red;
+      border: 1rpx red solid;
+  }
+  .time-shaft-left-line {
+    height: 110rpx;
+    width: 6rpx;
+    background-color: #666;
+  }
+  .time-shaft-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin-top: -8rpx;
+    margin-right: 20rpx;
+  }
+  .scroll-view {
+    width: 100%;
+    height: 91.5%;
+  }
+  .detailContent{
+    font-size: 28rpx;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="tablayout">
+      <text class="{{detailClass}} tab-item" bindtap="onDetail">详         情</text>
+      <text class="{{xindeClass}} tab-item" bindtap="onXinDe">  心         得</text>
+    </view>
+    <scroll-view class="scroll-view" scroll-y>
+      <view wx-if="{{showDetail}}" class="content"><text class="detailContent">{{detail}}</text></view>
+      <view wx-if="{{showXinde}}" class="content">
+        <repeat for="{{list}}" key="index" index="index" item="item">
+          <view class="time-shaft">
+            <view class="time-shaft-left">
+              <view wx:if="{{item==2||item==4}}" class="time-shaft-left-circle2"></view>
+              <view wx:else class="time-shaft-left-circle1"></view>
+              <view class="time-shaft-left-line"></view>
+            </view>
+            <view class="time-shaft-right">
+              <text style="font-size:26rpx;">2018-09-23</text>
+              <text style="font-size:28rpx;">今天也是醉了</text>
+            </view>
+          </view>
+        </repeat>
+      </view>
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '../BasePage'
+  import request from '../../js/NetUtils.js'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '持戒记录',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {
+      detailClass: "tabSelectClass",
+      xindeClass: "tabNormalClass",
+      showDetail: true,
+      showXinde: false,
+      detail: "1，周一一百次，走偶尔对方水电费是非得失。\n2，招待费收费的冯绍峰",
+      xinde: "",
+      list: []
+    }
+    computed = {
+      now() {
+        return +new Date()
+      }
+    }
+    methods = {
+      onDetail() {
+        this.detailClass = "tabSelectClass";
+        this.xindeClass = "tabNormalClass";
+        this.showDetail = true;
+        this.showXinde = false;
+      },
+      onXinDe() {
+        this.detailClass = "tabNormalClass";
+        this.xindeClass = "tabSelectClass";
+        this.showDetail = false;
+        this.showXinde = true;
+      }
+    }
+    events = {}
+    onLoad() {
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(2)
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(4)
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(1)
+      this.list.push(1)
+    }
+  }
+</script>

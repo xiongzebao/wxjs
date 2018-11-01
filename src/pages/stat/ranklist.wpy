@@ -34,10 +34,7 @@
 </style>
 
 <template>
-  <!-- <scroll-view class="ranklist-container" scroll-y style="height:100%;width:100%">
-        <text class="ranklist-title">排名前50排行榜</text>
-        <canvas canvas-id="myCanvas" disable-scroll="false" class="pieCanvas" style="width:100%; height:100%;"></canvas>
-      </scroll-view> -->
+
   <scroll-view class="ranklist-container" scroll-y bindscroll='scrollCanvas'>
     <view class="canvas_height" style='transform: translateX(-{{canvasLen}}px);'>
       <canvas canvas-id="myCanvas" class="canvasHigh"></canvas>
