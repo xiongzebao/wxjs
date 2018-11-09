@@ -35,7 +35,6 @@
         "pages/stat/charts",
         "pages/stat/ranklist",
         "pages/index/completeUserInfo",
-      //  "pages/commen/spbf",
         "pages/index/readMe",
         "pages/index/Me",
         "pages/index/FeedBack",
