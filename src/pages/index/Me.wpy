@@ -1,5 +1,6 @@
 <style lang="less">
   .me-item {
+    border: none;
     width: 100%;
     font-size: 32rpx;
     height: 60rpx;
@@ -28,6 +29,12 @@
       align-items: center;
     }
   }
+  .item-arrow-share {
+    width: 35rpx;
+    height: 35rpx;
+    flex-grow: 0;
+    margin-right: 13rpx;
+  }
   .divider {
     height: 20rpx;
     background: #efefef;
@@ -52,7 +59,7 @@
       height: 100%;
       padding-top: 40rpx;
       padding-bottom: 40rpx;
-    background: linear-gradient(180deg, #26a2ff, white); 
+      background: linear-gradient(180deg, #26a2ff, white);
     }
   }
   .me-avatar {
@@ -72,18 +79,37 @@
     font-size: 28rpx;
     margin-top: 10rpx;
   }
-  .spirit-value-normal{
+  .spirit-value-normal {
     margin-left: 40rpx;
     font-size: 28rpx;
     color: #26a2ff;
   }
-   .spirit-value-exception{
+  .spirit-value-exception {
     margin-left: 40rpx;
     margin-right: 40rpx;
     font-size: 28rpx;
-    color:red;
+    color: red;
   }
- 
+  .shareBtn {
+    height: 100%;
+  } // .con_listbox {
+  //   width: 100%;
+  //   height: 120rpx;
+  //   padding: 0 32rpx;
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
+  //   background: #fff;
+  //   font-size: 28rpx;
+  //   border: none;
+  //   /*正常来说加上这个是可以去掉边框的*/
+  // }
+  // button[class="con_listbox"]::after {
+  //   border: 0rpx;
+  // }
+  button::after {
+    border: none;
+  }
 </style>
 
 <template>
@@ -94,33 +120,37 @@
       <text wx-if="{{!disabled}}" bindtap="onModifyCommited" class="modifyBtn">提交修改</text>
       <text style="font-size:25rpx;margin-top:20rpx;color:#6f6f6f">点击头像和昵称可修改</text>
     </view>
-    
-
-
     <view class="me-item" bindtouchstart="containerTap" id="menu-item-spirit">
       <view class="item-left">
-        <image class="item-img-small" src="../../asset/imgs/liangbei.png">
-          <text class="item-text" >精气值</text>
-          <text class="{{spiritTextClass}}">70%(偏低)</text>
-           <image class="item-arrow" src="{{faceImg}}">
+        <image class="item-img-small" src="../../asset/imgs/liangbei.png"/>
+          <text class="item-text">精气值</text>
+          <text class="{{spiritTextClass}}">50%(偏低)</text>
+          <image class="item-arrow" src="{{faceImg}}"/>
       </view>
-      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png"/>
     </view>
     <view class="divider"></view>
     <view class="me-item" bindtouchstart="containerTap" id="menu-item-fankui">
       <view class="item-left">
-        <image class="item-img-small" src="../../asset/imgs/fankui.png">
-          <text class="item-text" >反馈</text>
+        <image class="item-img-small" src="../../asset/imgs/fankui.png"/>
+          <text class="item-text">反馈</text>
       </view>
-      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png"/>
     </view>
     <view class="divider-small"></view>
+    <button class='me-item shareBtn' id="shareBtn" open-type="share" hover-class="none">
+                    <view class="item-left">
+                      <image class="item-img-small" src="../../asset/imgs/ic_share.png"/>
+                        <text class="item-text"  >转发</text>
+                    </view>
+                      <image class="item-arrow-share" src="../../asset/imgs/jiantou.png"/>
+                  </button>
     <view class="me-item" bindtouchstart="containerTap" id="menu-item-guanyu">
       <view class="item-left">
-        <image class="item-img-small" src="../../asset/imgs/guanyu.png">
-          <text class="item-text"  >关于</text>
+        <image class="item-img-small" src="../../asset/imgs/guanyu.png"/>
+          <text class="item-text">用户须知</text>
       </view>
-      <image class="item-arrow" src="../../asset/imgs/jiantou.png">
+      <image class="item-arrow" src="../../asset/imgs/jiantou.png"/>
     </view>
     <text wx-if="{{showGroup}}" class="me-item" bindtouchstart="containerTap" id="menu-item4">讨论组</text>
     <view wx-if="{{showGroup}}" class="divider-small"></view>
@@ -147,8 +177,8 @@
       editclass: "",
       disabled: true,
       userinfo: {},
-      spiritTextClass:"spirit-value-exception",
-      faceImg:"../../asset/imgs/sad-red.png"
+      spiritTextClass: "spirit-value-exception",
+      faceImg: "../../asset/imgs/sad-red.png"
     }
     computed = {
       showMsg() {
@@ -169,7 +199,6 @@
       nickName() {
         return this.userinfo.nickName
       }
-    
     }
     editNickName(b) {
       if (b) {
@@ -290,6 +319,25 @@
     events = {}
     onLoad() {
       this.userinfo = wx.getStorageSync("fullUserInfo")
+    }
+    onShareAppMessage(res) {
+      if (res.from === 'button') {
+        console.log("来自页面内转发按钮");
+        console.log(res.target);
+      } else {
+        console.log("来自右上角转发菜单")
+      }
+      return {
+        title: '戒色圈小程序',
+        path: '/pages/sign/sign',
+        imageUrl: "https://xiongbin.top/images/sharecover.png",
+        success: (res) => {
+          console.log("转发成功", res);
+        },
+        fail: (res) => {
+          console.log("转发失败", res);
+        }
+      }
     }
   }
 </script>

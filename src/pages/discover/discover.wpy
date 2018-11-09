@@ -51,10 +51,10 @@
       <image src="../../asset/imgs/liuyanban.png" class="discover-item-image" />
       <text class="discover-item-text">留言板</text>
     </view>
-    <view class="discover-item" bindtap="onMessageBoard">
+    <!-- <view class="discover-item" bindtap="onMessageBoard">
       <image src="../../asset/imgs/mubiao.png" class="discover-item-image" />
       <text class="discover-item-text">立标</text>
-    </view>
+    </view> -->
      <!-- <view class="discover-item" bindtap="onMessageBoard">
       <image src="../../asset/imgs/quanzi.png" class="discover-item-image" />
       <text class="discover-item-text">戒友圈</text>
@@ -64,7 +64,7 @@
 
 
   <view class="discover-divider"></view>
-  <view class="discover-container">
+  <!-- <view class="discover-container">
     
     <view class="discover-item" bindtap="onMessageBoard">
       <image src="../../asset/imgs/info.png" class="discover-item-image" />
@@ -74,7 +74,7 @@
       <image src="../../asset/imgs/video.png" class="discover-item-image" />
       <text class="discover-item-text">视频</text>
     </view>
-  </view>
+  </view> -->
 
   </view>
 </template>

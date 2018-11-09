@@ -26,7 +26,7 @@
 <template>
   <view class="container">
     <canvas canvas-id="spirit-canvas" class="canvasHigh"></canvas>
-    <text class="note">我问客服开始疯狂的首付款都是开放的开发范德萨范德萨发东方闪电发的所发生的</text>
+    <text class="note">  </text>
   </view>
 </template>
 
@@ -63,6 +63,7 @@
     drawItem(data) {
       this.drawSpirit(data);
     }
+    
     drawSpirit(data) {
       let totalValue = data.totalValue
       let value = data.value
@@ -92,7 +93,7 @@
     drawOne() {
       let data = {};
       data.totalValue = 100;
-      data.value = 95;
+      data.value = 50;
       data.rx = this.winWidth / 2;
       data.ry = 100;
       data.r = 60;

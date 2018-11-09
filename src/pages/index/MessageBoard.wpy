@@ -35,6 +35,9 @@
   }
   .item-container {
     margin-top: 20rpx;
+    display: flex;
+    flex-direction: column;
+
   }
   .item-header {
     display: flex;
@@ -46,16 +49,20 @@
     justify-content: center;
     align-items: center;
   }
-  .msg-loading{
+  .msg-loading {
     width: 80rpx;
     height: 80rpx;
   }
-  .loading-container{
-     display: flex;
+  .loading-container {
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     margin-top: 10rpx;
+  }
+  .createTimeClass{
+    font-size: 25rpx;
+    align-self: flex-end;
   }
 </style>
 
@@ -65,24 +72,24 @@
     <button class="message-confirm" bindtap="onConfirm">提交</button>
     <scroll-view id="scroll-view" scroll-y scroll-with-animation scroll-into-view="{{intoViewID}}" scroll-top="{{currentScrollTop}}" bindscroll="bindscroll" style="{{defaultStyle+style}}" bindscrolltolower="bindscrolltolower" lower-threshold="100">
       <view wx-if="{{showLoading}}" class="loading-container" id="header">
-        <image wx-if="{{showLoading}}" mode="aspectFit"  class="msg-loading"  src="../../asset/imgs/loading_spinner.gif" />
+        <image wx-if="{{showLoading}}" mode="aspectFit" class="msg-loading" src="../../asset/imgs/loading_spinner.gif" />
       </view>
       <repeat for="{{list}}" slot="subView" key="index" index="index" item="item">
         <view class="item-container">
           <view class="item-header">
-            <UserHeader :item="item"  ></UserHeader>
+            <UserHeader :item="item"></UserHeader>
             <view wx-if="{{false}}" class="praise-container">
               <image style="width:60rpx;height:60rpx" src="../../asset/imgs/notice.png" /><text style="width:60rpx;height:60rpx">13</text></view>
           </view>
           <text class="message-content">{{item.content}}</text>
+          <text class="createTimeClass">{{item.createTime}}</text>
         </view>
       </repeat>
       <view class="header" hidden="{{true}}">
         <image wx:if="{{isHasMoreData}}" mode="aspectFit" src="../../asset/imgs//loading_spinner.gif" />
         <text wx:else>已加载全部</text>
       </view>
- 
-  </scroll-view>
+    </scroll-view>
   </view>
 </template>
 
@@ -125,7 +132,6 @@
     }
     computed = {}
     methods = {
-     
       bindtouchend() {
         console.log("bindtouchend")
       },
@@ -133,6 +139,9 @@
         this.signState = e.detail.value;
       },
       onConfirm() {
+        wx.showLoading({
+          title: '正在提交...',
+        })
         let that = this
         let userInfo = wx.getStorageSync("fullUserInfo");
         let data = {
@@ -146,8 +155,9 @@
           .then((data) => {
             console.log(data)
             setTimeout(() => {
+              wx.hideLoading();
               InterfaceUtils.showToast("提交成功");
-            }, 1000)
+            }, 100)
             that.reqMsg()
           })
           .catch((e) => {

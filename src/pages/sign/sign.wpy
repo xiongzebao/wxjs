@@ -126,7 +126,7 @@
     background: #dddddd;
   }
   .menu-item3 {
-    background: #eeeeee
+    background: #eeeeee;
   }
   .wave {
     border: 6px solid red;
@@ -172,8 +172,12 @@
   .tip-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    background-color: #f9f9f9;
+    width: 95%;
+    background-color: #f8f8f8;
+    box-shadow: 2px 5px 4px #888888;
+    margin: 10rpx;
+    margin-bottom: 20rpx;
+    border: 1rpx solid #f6f6f6;
   }
   .latestTip {
     padding-left: 30rpx;
@@ -260,13 +264,13 @@
   }
   .sidebar {
     background-color: #eeeeee;
-    width: 170rpx;
+    width: 150rpx;
     height: 60rpx;
     position: absolute;
     display: flex;
     flex-direction: row;
     align-items: center;
-    top: 470rpx;
+    top: 50rpx;
     right: 0rpx;
     z-index: 2000;
     border-top-left-radius: 30rpx;
@@ -276,7 +280,7 @@
   .sign-avatar {
     width: 50rpx;
     height: 50rpx;
-    margin-left: 10rpx;
+    margin-left: 5rpx;
     border-radius: 50%;
   }
   .sidebar-arrow {
@@ -300,6 +304,23 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: flex-start;
+    margin-top: 15rpx;
+    margin-bottom: 15rpx;
+  }
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .spiritLabel {
+    font-size: 22rpx;
+    text-align: center;
+    width: 100%;
+  }
+  .canvasHigh {
+    width: 100%;
+    height: 240rpx;
   }
 </style>
 
@@ -310,7 +331,7 @@
       <image class="sign-avatar" src="{{avatarUrl}}" />
       <text style="font-size:25rpx;color:orange;margin-left:10rpx;margin-right:5rpx">{{signDays}}</text>
       <text style="font-size:25rpx;">天 </text>
-      <image class="sidebar-arrow" src="../../asset/imgs/jiantou.png"/>
+      <image class="sidebar-arrow" src="../../asset/imgs/jiantou.png" />
     </view>
     <movable-area style="height: 100%;width: 100%;">
       <scroll-view class="scroll-view" scroll-y style="height:100%;width:100%">
@@ -329,41 +350,45 @@
               </swiper-item>
             </repeat>
           </swiper>
-          <image class="tip-img" mode="scaleToFill" src="{{homePicUrl}}" bindtap="previewImage" />
+          <image wx-if="{{homePicUrl!=''}}" class="tip-img" mode="scaleToFill" src="{{homePicUrl}}" bindtap="previewImage" />
           <view class="avatar-layout" bindtap="onSeeAllUsers">
             <view>
               <text style="font-size:28rpx;color:#333333">共</text>
-              <text style="font-size:28rpx;color:orange">1234</text>
+              <text style="font-size:28rpx;color:orange">{{lastUserInfo.num}}</text>
               <text style="font-size:28rpx;color:#333333">个圈友</text>
             </view>
             <view class="user-avatars-container">
-              <repeat for="{{avatarlist}}" key="index" index="index" item="item">
-                <image src="{{avatarUrl}}" class="avatarItem" />
+              <repeat for="{{lastUserInfo.last5users}}" key="index" index="index" item="item">
+                <image src="{{item.avatarUrl}}" class="avatarItem" />
               </repeat>
             </view>
             <image src="../../asset/imgs/more.png" class="avatarItem" />
           </view>
+          <!-- <text  class="spiritLabel">(总量120ml)</text> -->
           <!-- 公告 -->
           <!-- <view wx-if="{{showNotice==1}}" class="notice-layout">
-                          <image class="icon" mode="aspectFit" src="../../asset/imgs/notice.png" />
-                          <text>通知</text>
-                          <image class="icon .notice-del" bindtap="onDeleteNotice" mode="aspectFit" src="../../asset/imgs/error_red.png" />
-                        </view> -->
+                                        <image class="icon" mode="aspectFit" src="../../asset/imgs/notice.png" />
+                                        <text>通知</text>
+                                        <image class="icon .notice-del" bindtap="onDeleteNotice" mode="aspectFit" src="../../asset/imgs/error_red.png" />
+                                      </view> -->
           <!-- <view class="notice-bg">
-                        <text class="notice-content">{{notice}}</text>
-                        </view> -->
+                                      <text class="notice-content">{{notice}}</text>
+                                      </view> -->
           <!-- 一共签到的天数和最近三天未签到提醒 -->
-          <view  wx-if="{{false}}" class="tip-container">
+          <view wx-if="{{true}}" class="tip-container">
             <view wx-if="{{true}}" class="latestTip">
               <text class="tip" wx-if="{{latestSignTip!=''}}">{{latestSignTip}} </text>
             </view>
             <text class="courage" wx-if="{{isShowCourage}}">{{couragementTip}}</text>
           </view>
+          <!-- //精气值绘制 -->
+          <canvas canvas-id="spirit-canvas" class="canvasHigh"></canvas>
+          <text class="spiritLabel">{{spirit}}</text>
         </view>
         <view class="footer">
           <!-- 签到按钮 -->
           <button class="confirm material-design" bindtap="onConfirm">去签到吧</button>
-          <text class="version">版本号 2.1.0</text>
+          <!-- <text class="version">版本号 2.2.0</text> -->
         </view>
       </scroll-view>
       <movable-view direction="all" x="{{initX}}" y="{{initY}}" bindchange="onChange" class="movable-item">
@@ -382,34 +407,34 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import BasePage from '../BasePage'
-  import request from '../../js/NetUtils.js'
-  import api from '../../js/url.js'
-  import utils from '@/js/utils.js'
-  import Icon from '../../components/icon'
+  import wepy from 'wepy';
+  import BasePage from '../BasePage';
+  import request from '../../js/NetUtils.js';
+  import api from '../../js/url.js';
+  import utils from '@/js/utils.js';
+  import Icon from '../../components/icon';
   export default class Index extends BasePage {
     config = {
-      'navigationBarTitleText': '签到',
-      'navigationBarTextStyle': 'white',
-      'navigationBarBackgroundColor': '#26a2ff',
-      'disableScroll': false,
-      'enablePullDownRefresh': false,
-      'backgroundTextStyle': 'dark',
+      navigationBarTitleText: '签到',
+      navigationBarTextStyle: 'white',
+      navigationBarBackgroundColor: '#26a2ff',
+      disableScroll: false,
+      enablePullDownRefresh: false,
+      backgroundTextStyle: 'dark',
       usingComponents: {}
-    }
+    };
     components = {
-      icon: Icon,
-    }
+      icon: Icon
+    };
     data = {
       canIUse: wx.canIUse('button.open-type.getUserInfo'),
-      latestSignTip: "",
-      couragementTip: "",
+      latestSignTip: '',
+      couragementTip: '',
       isChecked: false,
-      articleTitle: "这是文章标题 ",
-      articleSubTitle: "这个是文章自标题",
-      homePicUrl: "",
-      notice: "",
+      articleTitle: '这是文章标题 ',
+      articleSubTitle: '这个是文章自标题',
+      homePicUrl: '',
+      notice: '',
       //以下是与动画相关
       animationData: {},
       isRotate: false,
@@ -418,35 +443,36 @@
       y: 0,
       initX: 0,
       initY: 0,
-      menuHeight: "280rpx",
+      menuHeight: '280rpx',
       showArticle: false,
       swiperList: [],
-      showSwiper: 0,
+      showSwiper: 2,
       showNotice: 0,
       showMessageBoard: 2,
-      about: "",
-      avatarlist: []
-    }
+      about: '',
+      avatarlist: [],
+      lastUserInfo: {},
+      signDays: '  ',
+      homeSpirit: 0,
+      spirit: ""
+    };
     computed = {
       isShowCourage() {
-        return !utils.isEmpty(this.couragementTip)
+        return !utils.isEmpty(this.couragementTip);
       },
       isShowArticle() {
         return this.showArticle;
       },
       avatarUrl() {
-        let userinfo = wx.getStorageSync("fullUserInfo")
+        let userinfo = wx.getStorageSync('fullUserInfo');
         return userinfo.avatarUrl;
-      },
-      signDays() {
-        return 67;
       }
-    }
+    };
     methods = {
       onConfirm(res) {
         wx.navigateTo({
           url: './submit?isResign=2'
-        })
+        });
         // wx.navigateTo({
         //   url: '../stat/charts'
         // })
@@ -456,37 +482,37 @@
       },
       onDeleteNotice() {
         this.showNotice = 0;
-        wx.setStorageSync("showNotice", 0)
+        wx.setStorageSync('showNotice', 0);
       },
       onSeeArticle() {
         let that = this;
-        if (typeof(this.dayArticle) == "number") {
+        if (typeof this.dayArticle == 'number') {
           wx.navigateTo({
             url: '../info/infoDetail?id=' + that.dayArticle
-          })
-        } else if (this.dayArticle.indexOf("http") != -1) {}
+          });
+        } else if (this.dayArticle.indexOf('http') != -1) {}
       },
       onSwiperTap(res) {
-        console.log(res)
+        console.log(res);
         let index = res.currentTarget.id;
-        let item = this.swiperList[index]
+        let item = this.swiperList[index];
         if (item.type == 1) {
           wx.navigateTo({
             url: '../info/infoDetail?id=' + item.articleId
-          })
+          });
         } else {
-          wx.navigateTo({
-            url: '../commen/video?videoUrl=' + item.videoUrl
-          })
+          // wx.navigateTo({
+          //   url: '../commen/spbf?videoUrl=' + item.videoUrl
+          // });
         }
       },
       previewImage() {
         let that = this;
-        console.log("previewImage")
+        console.log('previewImage');
         wx.previewImage({
           current: that.homePicUrl, // 当前显示图片的http链接
           urls: [that.homePicUrl] // 需要预览的图片http链接列表
-        })
+        });
       },
       onTapAddBtn(res) {
         this.toggleAnimation();
@@ -497,51 +523,122 @@
         this.y = e.detail.y;
       },
       containerTap: function(res) {
-        console.log(res)
-        this.showWave(res)
-        if (res.currentTarget.id == "menu-item1") {
+        console.log(res);
+        this.showWave(res);
+        if (res.currentTarget.id == 'menu-item1') {
           wx.showModal({
             title: '公告',
-            content: wx.getStorageSync("notice"),
-            showCancel: false,
-          })
+            content: wx.getStorageSync('notice'),
+            showCancel: false
+          });
         }
-        if (res.currentTarget.id == "menu-item2") {
+        if (res.currentTarget.id == 'menu-item2') {
           wx.navigateTo({
             url: `../index/FeedBack`
-          })
-          return
-        }
-        if (res.currentTarget.id == "menu-item3") {
-          wx.navigateTo({
-            url: `../index/MessageBoard`
-          })
+          });
           return;
         }
-        if (res.currentTarget.id == "menu-item4") {
+        if (res.currentTarget.id == 'menu-item3') {
+          wx.navigateTo({
+            url: `../index/MessageBoard`
+          });
+          return;
+        }
+        if (res.currentTarget.id == 'menu-item4') {
           let that = this;
           wx.navigateTo({
             url: `../info/infoDetail?content=${that.about} `
-          })
-          return
+          });
+          return;
         }
       },
       onSignDetail() {
         wx.navigateTo({
           url: './signDetail'
-        })
+        });
       },
-      onSeeAllUsers(){
-         wx.navigateTo({
-            url: `../index/Users`
-          })
-          return
+      onSeeAllUsers() {
+        wx.navigateTo({
+          url: `../index/Users`
+        });
+        return;
       }
-
+    };
+    events = {};
+    drawSpirit(data) {
+      let totalValue = data.totalValue;
+      let value = data.value;
+      let rx = data.rx;
+      let ry = data.ry;
+      let r = data.r;
+      let per = value / totalValue;
+      if (per < 0) {
+        per = 0
+      }
+      let topLineY = ry - r + 2 * r * (1 - per);
+      let ctx = wx.createCanvasContext('spirit-canvas');
+      ctx.beginPath();
+      ctx.arc(rx, ry, r, 0, 2 * Math.PI); //rx,ry,r,起始弧度，单位弧度（在3点钟方向）,终止弧度
+      ctx.clip();
+      ctx.beginPath();
+      ctx.setFontSize(8);
+      // ctx.arc(100, 100, 50, 0, 1 * Math.PI)
+      ctx.fillText(value + 'ml', rx - 8.5, topLineY - 3);
+      // ctx.fillText("容量"+totalValue + "ml", rx - 15, ry - r+10);
+      ctx.rect(rx - r, topLineY, rx + 2 * r, ry + 2 * r); //矩形路径左上角的横坐标,矩形路径左上角的纵坐标,矩形路径的宽度,矩形路径的高度
+      ctx.setFillStyle('red');
+      ctx.fill();
+      ctx.beginPath();
+      ctx.setLineWidth(2)
+      ctx.arc(rx, ry, r, -0.4 * Math.PI, 1.4 * Math.PI);
+      ctx.setStrokeStyle('#333333');
+      ctx.stroke();
+      ctx.draw();
     }
-    events = {}
+    drawOne() {
+      let data = {};
+      data.totalValue = 100;
+      data.value = 95;
+      data.rx = this.winWidth / 2;
+      data.ry = 100;
+      data.r = 50;
+      this.drawSpirit(data);
+    }
+    drawCanvas(totalValue, value) {
+      let that = this;
+      wx.getSystemInfo({
+        success: function(res) {
+          let winWidth = res.windowWidth;
+          let data = {};
+          data.totalValue = totalValue;
+          data.value = value;
+          data.rx = winWidth / 2;
+          data.ry = 60;
+          data.r = 50;
+          that.drawSpirit(data);
+          let per = value / totalValue
+          let flag = ""
+          if (per < 0) {
+            flag = "亏损"
+          } else if (per < 0.3) {
+            flag = "严重不足"
+          } else if (per < 0.5) {
+            flag = "偏低"
+          } else {
+            flag = "充沛"
+          }
+          let showValue = per * 100 + ""
+          console.log(showValue)
+          if (showValue.length > 4) {
+            showValue = showValue.substr(0, 4)
+          }
+          that.spirit = showValue + "%" + `(${flag})`
+          that.$apply()
+        }
+      });
+    }
     showWave(res) {
-      var that = this
+      var that = this;
       var x = res.touches[0].pageX;
       var y = res.touches[0].pageY + 85;
       this.setData({
@@ -549,81 +646,80 @@
       });
       setTimeout(function() {
         that.setData({
-          rippleStyle: 'top:' + y + 'px;left:' + x + 'px;-webkit-animation: ripple 0.4s linear;animation:ripple 0.4s linear;'
+          rippleStyle: 'top:' +
+            y +
+            'px;left:' +
+            x +
+            'px;-webkit-animation: ripple 0.4s linear;animation:ripple 0.4s linear;'
         });
-      }, 200)
+      }, 200);
     }
     onLoad() {
       this.login();
       this.getExtraInfo();
-      this.getSwiperInfo();
+      this.reqLastUserInfo();
       this.createAnimation();
-      this.showNotice = wx.getStorageSync("showNotice", 2)
+      this.reqHomeSpirit();
+      this.showNotice = wx.getStorageSync('showNotice', 2);
       let that = this;
-      let screenW = wx.getStorageSync("movable_view_x")
-      let screenH = wx.getStorageSync("movable_view_y")
+      let screenW = wx.getStorageSync('movable_view_x');
+      let screenH = wx.getStorageSync('movable_view_y');
       if (screenH == 0 && screenW == 0) {
         wx.getSystemInfo({
           success: function(res) {
             that.initX = res.windowWidth;
             that.initY = res.windowHeight;
-            that.$apply()
+            that.$apply();
           }
-        })
-        return
+        });
+        return;
       }
       this.initX = screenW;
-      this.initY = screenH
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
-      this.avatarlist.push("../../asset/imgs/play.png")
+      this.initY = screenH;
     }
     onUnload() {
-      wx.setStorageSync("movable_view_x", this.x)
-      wx.setStorageSync("movable_view_y", this.y)
+      wx.setStorageSync('movable_view_x', this.x);
+      wx.setStorageSync('movable_view_y', this.y);
     }
     onHide() {
-      wx.setStorageSync("movable_view_x", this.x)
-      wx.setStorageSync("movable_view_y", this.y)
+      wx.setStorageSync('movable_view_x', this.x);
+      wx.setStorageSync('movable_view_y', this.y);
     }
     onShow() {
-      let sign_refresh = wx.getStorageSync("sign_refresh");
-      if (sign_refresh == "1") { //完善信息之后页面要刷新
+      let sign_refresh = wx.getStorageSync('sign_refresh');
+      if (sign_refresh == '1') {
+        //完善信息之后页面要刷新
         this.login();
-        wx.setStorageSync("sign_refresh", 2);
+        wx.setStorageSync('sign_refresh', 2);
       }
     }
     toggleAnimation() {
       if (!this.isRotate) {
-        this.animation.rotate(45).step()
+        this.animation.rotate(45).step();
         this.setData({
           animationData: this.animation.export()
-        })
-        this.isRotate = true
+        });
+        this.isRotate = true;
       } else {
-        this.animation.rotate(0).step()
+        this.animation.rotate(0).step();
         this.setData({
           animationData: this.animation.export()
-        })
-        this.isRotate = false
+        });
+        this.isRotate = false;
       }
     }
     toggleMenuHeight() {
       if (!this.isExpand) {
-        this.animationMenu.height(this.menuHeight).step()
+        this.animationMenu.height(this.menuHeight).step();
         this.setData({
           animationMenuData: this.animationMenu.export()
-        })
+        });
         this.isExpand = true;
       } else {
-        this.animationMenu.height(0).step()
+        this.animationMenu.height(0).step();
         this.setData({
           animationMenuData: this.animationMenu.export()
-        })
+        });
         this.isExpand = false;
       }
     }
@@ -631,87 +727,107 @@
       var animation = wx.createAnimation({
         //transformOrigin: "50% 50%",
         duration: 500,
-        timingFunction: "ease",
+        timingFunction: 'ease',
         delay: 0
-      })
-      this.animation = animation
+      });
+      this.animation = animation;
       var animationMenu = wx.createAnimation({
         //transformOrigin: "50% 50%",
         duration: 500,
-        timingFunction: "ease",
+        timingFunction: 'ease',
         delay: 0
-      })
-      this.animationMenu = animationMenu
+      });
+      this.animationMenu = animationMenu;
+    }
+    reqLastUserInfo() {
+      let that = this;
+      request.post(api.ApiGetLastUserInfo).then(data => {
+        console.log(data);
+        let obj = data.datas.obj;
+        that.lastUserInfo = obj;
+        that.$apply();
+      });
+    }
+    reqHomeSpirit() {
+      let that = this;
+      request.post(api.ApiGetHomeSpirit).then(data => {
+        console.log(data);
+        let obj = data.datas.obj;
+        that.drawCanvas(obj.totalValue, obj.value)
+        that.$apply();
+      });
     }
     //请求咨询详情
     reqMainInfo() {
-      let userid = wx.getStorageSync("userId")
+      let userid = wx.getStorageSync('userId');
       let that = this;
-      request.post(api.ApiSignQuery, {
-        queryFlag: 4
-      }).then((data) => {
-        console.log(data);
-        let obj = data.datas.obj;
-        that.latestSignTip = obj.latestSignTip;
-        that.couragementTip = obj.couragementTip
-        that.$apply();
-      })
+      request
+        .post(api.ApiSignQuery, {
+          queryFlag: 4
+        })
+        .then(data => {
+          console.log(data);
+          let obj = data.datas.obj;
+          that.latestSignTip = obj.latestSignTip;
+          that.couragementTip = obj.couragementTip;
+          that.signDays = obj.signDays;
+          that.$apply();
+        });
     }
     getExtraInfo() {
       let that = this;
-      request.post(api.ApiExtraInfo).then((data) => {
+      request.post(api.ApiExtraInfo).then(data => {
         console.log(data);
         let obj = data.datas.obj;
-        wx.setStorageSync("extra", obj)
-        that.isChecked = obj.isChecked
-        that.dayArticle = obj.dayArticle
-        that.dayArticleTitle = obj.dayArticleTitle
-        that.homePicUrl = obj.homePicUrl
-        that.notice = obj.notice
-        let notice = wx.getStorageSync("notice")
+        wx.setStorageSync('extra', obj);
+        that.isChecked = obj.isChecked;
+        that.dayArticle = obj.dayArticle;
+        that.dayArticleTitle = obj.dayArticleTitle;
+        that.homePicUrl = obj.homePicUrl;
+        that.notice = obj.notice;
+        let notice = wx.getStorageSync('notice');
         if (notice != obj.notice && obj.showNotice == 1) {
-          that.showNotice == 1
-          wx.setStorageSync("notice", obj.notice)
-          wx.setStorageSync("showNotice", 1)
+          that.showNotice == 1;
+          wx.setStorageSync('notice', obj.notice);
+          wx.setStorageSync('showNotice', 1);
         }
         if (obj.showNotice != 1) {
-          that.showNotice == 2
-          wx.setStorageSync("notice", obj.notice)
-          wx.setStorageSync("showNotice", 2)
+          that.showNotice == 2;
+          wx.setStorageSync('notice', obj.notice);
+          wx.setStorageSync('showNotice', 2);
         }
-        that.showNotice = wx.getStorageSync("showNotice");
-        that.showSwiper = obj.showSwiper
-        that.showMessageBoard = obj.showMessageBoard
-        wx.setStorageSync("about", obj.about)
-        that.about = obj.about
+        that.showNotice = wx.getStorageSync('showNotice');
+        that.showSwiper = obj.showSwiper;
+        if (that.showSwiper == 1) {
+          that.getSwiperInfo();
+        }
+        that.showMessageBoard = obj.showMessageBoard;
+        wx.setStorageSync('about', obj.about);
+        that.about = obj.about;
         that.$apply();
-
-
-        if (wx.getStorageSync("showNotice") == 1) {
+        if (wx.getStorageSync('showNotice') == 1) {
           wx.showModal({
             title: '公告',
-            content:  wx.getStorageSync("notice"),
+            content: wx.getStorageSync('notice'),
             showCancel: false,
-            confirmText: "我知道了",
+            confirmText: '我知道了',
             success(res) {
               if (res.confirm) {
                 that.showNotice = 0;
-                wx.setStorageSync("showNotice", 0)
+                wx.setStorageSync('showNotice', 0);
               } else if (res.cancel) {}
             }
-          })
+          });
         }
-
-
-      })
+      });
     }
     getSwiperInfo() {
       let that = this;
-      request.post(api.ApiSwiperInfo).then((data) => {
+      request.post(api.ApiSwiperInfo).then(data => {
         console.log(data);
         that.swiperList = data.datas.list;
         that.$apply();
-      })
+      });
     }
     login() {
       let that = this;
@@ -719,31 +835,52 @@
         success: function(res) {
           let param = {
             code: res.code
-          }
+          };
           //用户没有完善信息，会被拦截并将userid保存在本地，并且跳转到完善信息用户界面
-          console.log(res)
-          request.post(api.ApiLogin, param)
-            .then((data) => {
+          console.log(res);
+          request
+            .post(api.ApiLogin, param)
+            .then(data => {
               try {
                 if (data.datas.userId) {
-                  wx.setStorageSync("userId", data.datas.userId)
-                  console.log("-----userid---")
-                  console.log(data.datas.userId)
+                  wx.setStorageSync('userId', data.datas.userId);
+                  console.log('-----userid---');
+                  console.log(data.datas.userId);
                 } else {
-                  wx.setStorageSync("userId", data.datas.fullUserInfo.userId)
-                  wx.setStorageSync("fullUserInfo", data.datas.fullUserInfo)
-                  console.log("-----userid---")
-                  console.log(data.datas.fullUserInfo.userId)
+                  wx.setStorageSync('userId', data.datas.fullUserInfo.userId);
+                  wx.setStorageSync('fullUserInfo', data.datas.fullUserInfo);
+                  console.log('-----userid---');
+                  console.log(data.datas.fullUserInfo.userId);
                 }
                 that.reqMainInfo();
               } catch (e) {
                 console.log(e);
               }
-            }).catch((e) => {
-              console.log(e)
             })
+            .catch(e => {
+              console.log(e);
+            });
         }
-      })
+      });
+    }
+    onShareAppMessage(res) {
+      if (res.from === 'button') {
+        console.log("来自页面内转发按钮");
+        console.log(res.target);
+      } else {
+        console.log("来自右上角转发菜单")
+      }
+      return {
+        title: '戒色圈小程序',
+        path: '/pages/sign/sign',
+        imageUrl: "https://xiongbin.top/images/sharecover.png",
+        success: (res) => {
+          console.log("转发成功", res);
+        },
+        fail: (res) => {
+          console.log("转发失败", res);
+        }
+      }
     }
   }
 </script>
