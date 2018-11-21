@@ -3,7 +3,8 @@
   export default class UserHeader extends wepy.component {
     props = {
       item: {
-        type: Object
+        type: Object,
+        twoWay: true
       },
       clickItem: {
         type: Function
@@ -12,17 +13,23 @@
     data = {}
     computed = {
       avatar() {
-     
         if (typeof(this.item) == "undefined") {
           return "../../asset/imgs/me.png";
         }
-           console.log(this.item.avatarUrl)
+        console.log(this.item.avatarUrl)
         return typeof(this.item.avatarUrl) == "undefined" ? "../../asset/imgs/me.png" : this.item.avatarUrl;
-      }
+      },
+      nickNameClass() {
+        if (typeof(this.item) != "undefined" && this.item.admin == 1) {
+          return "nickNameClass"
+        } else {
+          return ""
+        }
+      },
     }
     onLoad() {}
     methods = {
-      previewImage(avatarUrl,event) {
+      previewImage(avatarUrl, event) {
         console.log("previewiamges")
         wx.previewImage({
           current: avatarUrl, // 当前显示图片的http链接
@@ -35,26 +42,117 @@
 
 
 <template>
-  <view class="user-header"  >
-    <image data-avatarUrl="{{item.avatarUrl}}" @tap="previewImage({{item.avatarUrl}})" mode="aspectFill" class="userheader-avatar"   src="{{item.avatarUrl}}" />
-    <text class="imageText">{{item.nickName}}</text>
+  <view class="user-header">
+    <view class="me-avatar">
+      <image wx-if="{{item.gender==1}}" class="me-avatar-sex" src="../../asset/imgs/sex_male.png" />
+      <image wx-if="{{item.gender==2}}" class="me-avatar-sex" src="../../asset/imgs/sex_female.png" />
+      <image class="me-avatar-pic" src="{{item.avatarUrl}}" bindtap="onChooseImage" />
+      <image class="me-avatar-flag" wx-if="{{item.admin==1}}" src="../../asset/imgs/admin3.png" />
+    </view>
+    <view class="text-container">
+      <text class="nickNameClass" wx-if="{{item.admin==1}}">{{item.nickName}}</text>
+      <text class="imageText " wx-if="{{item.admin!=1}}">{{item.nickName}}</text>
+      <view class="text-bottom">
+        <text class="level-text">{{item.level}}级</text>
+        <view class="flower-container">
+        <image class="me-flower" wx-if="{{item.admin==1}}" src="../../asset/imgs/flower_red.png" />
+         <image class="me-flower" wx-if="{{item.admin==1}}" src="../../asset/imgs/flower_red.png" />
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 
-<style scope>
+<style lang="less" scope>
+.flower-container{
+  display: flex;
+  flex-direction: row;
+  margin-left: 10rpx;
+}
+  .me-flower {
+    width: 20rpx;
+    height: 20rpx;
+    margin-left: 5rpx;
+  }
+  .text-bottom {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+  }
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .level-text {
+    color: orange;
+    font-size: 20rpx;
+  }
+  .me-avatar {
+    width: 65rpx;
+    height: 65rpx;
+    border-radius: 50%;
+    margin-left: 10rpx;
+    margin-right: 10rpx;
+    flex: none;
+    position: relative;
+    .me-avatar-pic {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+    }
+    .me-avatar-flag {
+      position: absolute;
+      border-radius: 50%;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      left: 0rpx;
+      z-index: 50;
+    }
+    .me-avatar-sex {
+      position: absolute;
+      width: 25rpx;
+      height: 25rpx;
+      right: 3rpx;
+      top: 3rpx;
+      z-index: 100
+    }
+  }
+  .nickNameClass {
+    color: red;
+    font-size: 26rpx;
+    margin-left: 5rpx;
+    text-align: start;
+    white-space: nowrap;
+    /*禁止换行*/
+    text-overflow: ellipsis;
+    /*文本超出隐藏*/
+    overflow: hidden;
+    /*超出部分隐藏*/
+  }
   .userheader-avatar {
     width: 65rpx;
     height: 65rpx;
     border-radius: 50%;
     margin-left: 10rpx;
     margin-right: 10rpx;
+    flex: none;
   }
   .imageText {
-    font-size: 28rpx;
+    font-size: 26rpx;
     color: #709685;
-    margin-left: 15rpx;
-    text-align: end;
+    margin-left: 5rpx;
+    text-align: start;
+    white-space: nowrap;
+    /*禁止换行*/
+    text-overflow: ellipsis;
+    /*文本超出隐藏*/
+    overflow: hidden;
+    /*超出部分隐藏*/
   }
   .user-header {
     display: flex;

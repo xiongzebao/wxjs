@@ -119,11 +119,8 @@
       <text class="{{xindeClass}} tab-item" bindtap="onXinDe">  心         得</text>
     </view>
     <scroll-view class="scroll-view" scroll-y>
-
-
       <view wx-if="{{showDetail}}" class="content">
-
-          <text class="detailContent" style="margin:20rpx;font-weight:bold">按月统计:</text>
+        <text class="detailContent" style="margin:20rpx;font-weight:bold">按月统计:</text>
         <view class="table">
           <view class="tr">
             <view class="th">时间</view>
@@ -175,11 +172,9 @@
             </repeat>
           </view>
         </view>
-         <text class="detailContent" style="margin:20rpx;font-weight:bold">结论:</text>
+        <text class="detailContent" style="margin:20rpx;font-weight:bold">结论:</text>
         <text class="detailContent">{{signData.obj.note}}</text>
       </view>
-
-
       <view wx-if="{{showXinde}}" class="content">
         <repeat for="{{list}}" key="index" index="index" item="item">
           <view class="time-shaft">
@@ -211,7 +206,7 @@
       'navigationBarTextStyle': 'white',
       'navigationBarBackgroundColor': '#26a2ff',
       'disableScroll': false,
-      'enablePullDownRefresh': false,
+      'enablePullDownRefresh': true,
       'backgroundTextStyle': 'dark'
     }
     components = {}
@@ -241,8 +236,16 @@
         this.showDetail = false;
         this.showXinde = true;
         if (this.list.length == 0) {
+            wx.startPullDownRefresh()
           this.reqXinDe()
         }
+      }
+    }
+    onPullDownRefresh() {
+      if (this.showDetail == true) {
+        this.reqSignDetail()
+      } else {
+        this.reqXinDe()
       }
     }
     reqSignDetail() {
@@ -251,6 +254,7 @@
         console.log(data);
         that.signData = data.datas
         that.$apply();
+        wx.stopPullDownRefresh()
       })
     }
     reqXinDe() {
@@ -259,11 +263,13 @@
         console.log(data);
         that.list = data.datas.list
         that.$apply();
+        wx.stopPullDownRefresh()
       })
     }
     events = {}
     onLoad() {
-      this.reqSignDetail()
+      // this.reqSignDetail()
+      wx.startPullDownRefresh()
     }
   }
 </script>

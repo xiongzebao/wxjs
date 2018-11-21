@@ -14,9 +14,8 @@
 
 <template>
   <view class="container">
-    <text class="title"></text>
-    <text class="article"></text>
-    <text style="font-size:25rpx;font-weight:900;margin-top:30rpx">---   摘自一片国外戒色视频语录</text>
+  
+ 
   </view>
 </template>
 

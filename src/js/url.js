@@ -13,10 +13,13 @@ let api = {
   ApiInfoQueryList: host + "/wxjs/public/info/querylist",//资讯列表
   ApiInfoQueryDetail: host + "/wxjs/public/info/query",//资讯详情
   ApiExtraInfo: host + "/wxjs/public/extra/get_extra_info",//动态加载页面
+  ApiExtraUpdate: host + "/wxjs/public/extra/set_extra_info",//动态加载页面
+
   ApiSwiperInfo: host + "/wxjs/public/extra/get_swiper_info",//动态加载页面
   ApiRankList: host + "/wxjs/auth/stat/get_stat_info",//获取统计排行榜信息
-  ApiAddMsg: host + "/wxjs/auth/msg/add_msg",//获取统计排行榜信息
-  ApiGetMsg: host + "/wxjs/auth/msg/get_msg",//获取统计排行榜信息
+  ApiAddMsg: host + "/wxjs/auth/msg/add_msg",//添加留言
+  ApiGetMsg: host + "/wxjs/auth/msg/get_msg",//获取留言列表
+  ApiDelMsg: host + "/wxjs/auth/msg/del_msg",//删除留言
   ApiUpLoad: host + "/upload",//获取统计排行榜信息
   ApiModifyNickName: host + "/wxjs/auth/user/modifyNickName",
   ApiFeedBack: host + "/wxjs/auth/feedback/add_feedback",

@@ -5,6 +5,7 @@
     align-items: center;
     flex-direction: column;
     padding: 10rpx;
+    background-color: white;
   }
   .message-confirm {
     width: 70%;
@@ -31,13 +32,10 @@
   .message-content {
     font-size: 28rpx;
     color: #333333;
-    margin-left: 45rpx;
-  }
-  .item-container {
-    margin-top: 20rpx;
-    display: flex;
-    flex-direction: column;
-
+    flex-grow: 1;
+    padding-left: 15rpx;
+    padding-right: 5rpx;
+    font-weight: bold;
   }
   .item-header {
     display: flex;
@@ -60,31 +58,67 @@
     align-items: center;
     margin-top: 10rpx;
   }
-  .createTimeClass{
+  .createTimeClass {
     font-size: 25rpx;
     align-self: flex-end;
+    margin-right: 10rpx;
+    bottom: 0rpx;
+  }
+  .item-content {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .item-container {
+    position: relative;
+    margin-top: 20rpx;
+    display: flex;
+    flex-direction: column;
+    width: 46%;
+    border: 1rpx solid #dddddd;
+    border-radius: 10rpx;
+    box-shadow: 2.5rpx 2.5rpx 5rpx #888888; // background-image: url("https://xiongbin.top/uploads/mb_bg.png");
+    padding: 10rpx;
+    background-size: 100% 100%;
+    background-color: #efefef;
+  }
+  .delete {
+    color: #26a2ff;
+    margin-right: 20rpx;
+  }
+  .input-container {
+    width: 100%;
   }
 </style>
 
 <template>
   <view class="msg-container">
-    <textarea class="note-input" bindinput="onInput" placeholder="在这里输入留言" maxlength="50" placeholder-class="phclass" value="{{feedback}}" />
-    <button class="message-confirm" bindtap="onConfirm">提交</button>
+    <view class="input-container" wx-if="{{isAdmin!=1}}">
+      <textarea class="note-input" bindinput="onInput" placeholder="在这里输入留言" maxlength="50" placeholder-class="phclass" value="{{feedback}}" />
+      <button class="message-confirm" bindtap="onConfirm">提交</button>
+    </view>
     <scroll-view id="scroll-view" scroll-y scroll-with-animation scroll-into-view="{{intoViewID}}" scroll-top="{{currentScrollTop}}" bindscroll="bindscroll" style="{{defaultStyle+style}}" bindscrolltolower="bindscrolltolower" lower-threshold="100">
       <view wx-if="{{showLoading}}" class="loading-container" id="header">
         <image wx-if="{{showLoading}}" mode="aspectFit" class="msg-loading" src="../../asset/imgs/loading_spinner.gif" />
       </view>
-      <repeat for="{{list}}" slot="subView" key="index" index="index" item="item">
-        <view class="item-container">
-          <view class="item-header">
-            <UserHeader :item="item"></UserHeader>
-            <view wx-if="{{false}}" class="praise-container">
-              <image style="width:60rpx;height:60rpx" src="../../asset/imgs/notice.png" /><text style="width:60rpx;height:60rpx">13</text></view>
+      <view class="item-content">
+        <repeat for="{{list}}" slot="subView" key="index" index="index" item="item">
+          <view class="item-container">
+            <view class="item-header">
+              <UserHeader :item="item"></UserHeader>
+              <view wx-if="{{false}}" class="praise-container">
+                <image style="width:60rpx;height:60rpx" src="../../asset/imgs/notice.png" /><text style="width:60rpx;height:60rpx">13</text></view>
+            </view>
+            <text class="message-content">{{item.content}}</text>
+            <view class="createTimeClass">
+              <text wx-if="{{item.userId== userInfo.userId||(isAdmin==1&&userInfo.admin==1)}}" class="delete" bindtap="onDelete({{item.id}})">删除</text>
+              <text class="createTimeClass">{{item.createTime}}</text>
+            </view>
           </view>
-          <text class="message-content">{{item.content}}</text>
-          <text class="createTimeClass">{{item.createTime}}</text>
-        </view>
-      </repeat>
+        </repeat>
+      </view>
       <view class="header" hidden="{{true}}">
         <image wx:if="{{isHasMoreData}}" mode="aspectFit" src="../../asset/imgs//loading_spinner.gif" />
         <text wx:else>已加载全部</text>
@@ -121,7 +155,9 @@
       contact: "",
       showLoading: true,
       footerHidden: true,
+      userInfo: wx.getStorageSync("fullUserInfo"),
       list: [],
+      isAdmin: 2,
       refreshHandle: () => {
         console.log("refreshHandle")
         //this.$invoke('ListView', 'endRefresh')
@@ -130,8 +166,28 @@
         console.log("getMoreData")
       }
     }
-    computed = {}
+    computed = {
+      // tUserId(){
+      //    let userInfo = wx.getStorageSync("fullUserInfo");
+      //    return userInfo.userId;
+      // }
+    }
     methods = {
+      onDelete(msgid) {
+        let that = this;
+        wx.showLoading()
+        request.post(api.ApiDelMsg, {
+            id: msgid
+          })
+          .then((data) => {
+            wx.hideLoading();
+            wx.showToast("")
+            that.reqMsg()
+          })
+          .catch((e) => {
+            InterfaceUtils.showToast(e.message);
+          });
+      },
       bindtouchend() {
         console.log("bindtouchend")
       },
@@ -145,18 +201,14 @@
         let that = this
         let userInfo = wx.getStorageSync("fullUserInfo");
         let data = {
-          userId: userInfo.userId,
-          nickName: userInfo.nickName,
           content: this.feedback,
-          avatarUrl: userInfo.avatarUrl,
-          level: userInfo.level,
         }
         request.post(api.ApiAddMsg, data)
           .then((data) => {
             console.log(data)
             setTimeout(() => {
               wx.hideLoading();
-              InterfaceUtils.showToast("提交成功");
+              wx.showToast("")
             }, 100)
             that.reqMsg()
           })
@@ -171,8 +223,13 @@
         this.contact = e.detail.value;
       }
     }
-    onLoad(option) {
+    onPullDownRefresh() {
       this.reqMsg();
+    }
+    onLoad(option) {
+      console.log(option.isAdmin)
+      this.isAdmin = option.isAdmin
+      wx.startPullDownRefresh()
     }
     reqMsg() {
       let that = this;
@@ -180,6 +237,7 @@
       request.post(api.ApiGetMsg)
         .then((data) => {
           console.log(data)
+           wx.stopPullDownRefresh()
           that.showLoading = false
           that.$apply();
           setTimeout(() => {

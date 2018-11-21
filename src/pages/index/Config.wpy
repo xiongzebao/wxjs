@@ -1,0 +1,198 @@
+<style lang="less">
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+  .article {
+    font-size: 25rpx;
+    margin-top: 30rpx;
+  }
+  .title {
+    font-size: 27rpx;
+    color: red;
+  }
+  .homePic {
+    width: 100%;
+    height: 300rpx;
+  }
+  .item-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .note-input-yonghuxuzhi {
+    width: 100%;
+    height: 300rpx;
+  }
+  .item-container-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .item1 {
+    color: orange;
+    font-weight: bold;
+  }
+  .note-input {
+    width: 100%;
+    height: 300rpx;
+    ;
+    font-size: 28rpx;
+    background-color: #efefef;
+    padding: 20rpx;
+  }
+  .toppictip {
+    font-size: 26rpx;
+    color: #dddddd;
+  }
+  .confirm {
+    width: 80%;
+    background: #26a2ff;
+    color: white;
+    font-size: 30rpx;
+    margin: 30rpx;
+  }
+</style>
+
+<template>
+  <view class="container">
+    <image class="homePic" bindtap="onChooseImage" src="{{ homePicUrl}}" />
+    <text class="toppictip">主页顶部图片(点击修改)</text>
+    <view class="item-container">
+      <text class="item1"> 首页图片显示：</text>
+      <switch checked="{{extra1.showHomePic==1}}" id="1" data-tag="homePic" bindchange="switchChange" />
+    </view>
+    <view class="item-container">
+      <text class="item1"> 首页轮播图显示：</text>
+      <switch checked="{{extra1.showSwiper==1}}" id="2" bindchange="switchChange" />
+    </view>
+    <view class="item-container">
+      <text class="item1"> 首页通知显示：</text>
+      <switch id="3" checked="{{extra1.showNotice==1}}" bindchange="switchChange" />
+    </view>
+    <view class="item-container">
+      <text class="item1"> 首页留言板显示：</text>
+      <switch id="4" checked="{{extra1.showMessageBoard==1}}" bindchange="switchChange" />
+    </view>
+    <view class="item-container">
+      <text class="item1"> 签到笔记输入框显示：</text>
+      <switch id="5" checked="{{extra1.showNoteInput==1}}" bindchange="switchChange" />
+    </view>
+    <view class="item-container">
+      <text class="item1"> 是否将通知显示在首页：</text>
+      <switch id="6" checked="{{extra1.showHomeTip==1}}" bindchange="switchChange" />
+    </view>
+    <view class="item-container-input">
+      <text class="item1"> 通知：</text>
+      <textarea class="note-input" bindinput="onInput" placeholder="通知内容" maxlength="-1" placeholder-class="phclass" value="{{extra1.notice}}" />
+    </view>
+    <button class="confirm material-design" bindtap="onSubmit">提交</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '@/pages/BasePage'
+  import request from '../../js/NetUtils.js'
+  import api from '@/js/url.js'
+  import InterfaceUtils from '../../js/InterfaceUtils'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '配置',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {
+      extra1: {}
+    }
+    computed = {
+      homePicUrl(){
+       return this.extra1.homePicUrl
+      }
+    }
+    uploadFile(tempFilePaths) {
+      wx.uploadFile({
+        url: api.ApiUpLoad,
+        filePath: tempFilePaths,
+        name: 'logo',
+        formData: {
+          type: 'homePic'
+        },
+        success(res) {
+          console.log(res)
+          const data = res.data
+          //do something
+        }
+      })
+    }
+    methods = {
+      onInput(e) {
+        this.extra1.notice = e.detail.value
+      },
+      switchChange(option) {
+        let id = option.currentTarget.id;
+        let value = option.detail.value;
+        let ivalue = value == true ? 1 : 2;
+        switch (id) {
+          case '1':
+            console.log("sfdsfsdf")
+            this.extra1.showHomePic = ivalue
+            break;
+          case '2':
+            this.extra1.showSwiper = ivalue
+            break;
+          case '3':
+            this.extra1.showNotice = ivalue
+            break;
+          case '4':
+            this.extra1.showMessageBoard = ivalue
+            break;
+          case '5':
+            this.extra1.showNoteInput = ivalue
+            break;
+          case '6':
+            this.extra1.showHomeTip = ivalue
+            break;
+        }
+        this.$apply()
+      },
+      onChooseImage() {
+        let that = this;
+        wx.chooseImage({
+          count: 1, // 默认9
+          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+            var tempFilePaths = res.tempFilePaths
+            that.extra1.homePicUrl = tempFilePaths[0]
+            that.$apply();
+            that.uploadFile(tempFilePaths[0])
+          }
+        })
+      },
+      onSubmit() {
+        console.log(this.extra1)
+        request.post(api.ApiExtraUpdate, {
+            extra: this.extra1
+          })
+          .then((data) => {
+            InterfaceUtils.showToast("提交成功");
+          })
+          .catch((e) => {
+            InterfaceUtils.showToast(e.message);
+          });
+      }
+    }
+    events = {}
+    onLoad() {
+      this.extra1 = wx.getStorageSync("extra");
+      this.$apply()
+    }
+  }
+</script>

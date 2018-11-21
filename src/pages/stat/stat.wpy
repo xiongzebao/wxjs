@@ -15,7 +15,6 @@
     font-size: 25rpx;
   }
   .comment-container {
-
     position: fixed;
     display: flex;
     width: 100%;
@@ -24,7 +23,6 @@
     justify-content: center;
     bottom: 0rpx;
   }
-
   .menu {
     position: fixed;
     bottom: 10rpx;
@@ -38,8 +36,6 @@
     font-size: 38rpx;
     color: red;
   }
-
-
   .menu-item {
     border-radius: 50%;
     font-size: 20rpx;
@@ -90,7 +86,7 @@
       'navigationBarTextStyle': 'white',
       'navigationBarBackgroundColor': '#26a2ff',
       'disableScroll': false,
-      'enablePullDownRefresh': false,
+      'enablePullDownRefresh': true,
       'backgroundTextStyle': 'dark'
     }
     components = {
@@ -101,9 +97,16 @@
         return this.showSign || this.showComment;
       }
     }
+    onPullDownRefresh() {
+      this.reqSignInfo();
+      setTimeout(() => {
+        wx.stopPullDownRefresh()
+      }, 1000)
+    }
     onLoad() {
       //请求当月的签到信息
-      this.reqSignInfo(dayjs().format("YYYY-MM"));
+        this.selMonth=dayjs().format("YYYY-MM");
+      wx.startPullDownRefresh()
     }
     data = {
       currentDate: dayjs().format("YYYY-MM-DD"),
@@ -112,6 +115,7 @@
       hasIconList: [],
       days: [],
       selDate: "",
+      selMonth: dayjs().format("YYYY-MM"),
       comment: "",
       showSign: false,
       showComment: false,
@@ -132,12 +136,17 @@
         this.isNeedRefresh = false;
         this.showComment = false;
         this.showSign = false;
+         this.selMonth=dayjs().format("YYYY-MM");
         //请求当月的签到信息
-        this.reqSignInfo(dayjs().format("YYYY-MM"));
+        wx.startPullDownRefresh()
       }
     }
-    reqSignInfo(yearmonth) {
+    reqSignInfo( ) {
       let that = this;
+     // if (typeof(yearmonth) == "undefined") {
+       let yearmonth = this.selMonth;
+      //}
+      console.log("qingqiu:"+yearmonth)
       //查询这一个月的打卡记录
       request.post(api.ApiSignQuery, {
           queryFlag: 3,
@@ -147,6 +156,10 @@
           that.days = data.datas.list;
           console.log(`这个月的打卡记录: `)
           console.log(that.days)
+          if (that.days.length == 0) {
+            that.hasIconList = []
+            that.$apply();
+          }
           that.days.forEach((item) => {
             let t = {
               index: dayjs(item.signDate).date(), //选中标记的日期（如2018-06-09）
@@ -154,6 +167,7 @@
             }
             that.hasIconList.push(t)
             that.$apply();
+            wx.stopPullDownRefresh()
           })
           that.$broadcast("startRenderCalendar"); //通知日历组件可以开始渲染 
         })
@@ -171,8 +185,7 @@
         this.toggleAnimation();
         this.toggleMenuHeight();
       },
-          containerTap: function(res) {
-
+      containerTap: function(res) {
         if (res.currentTarget.id == "menu-item1") {
           wx.navigateTo({
             url: `./ranklist`
@@ -184,7 +197,7 @@
           return
         }
         if (res.currentTarget.id == "menu-item3") {
-              InterfaceUtils.showToast("暂未开通")
+          InterfaceUtils.showToast("暂未开通")
           return
         }
       }
@@ -241,7 +254,8 @@
         this.showComment = false;
         this.showSign = false;
         this.hasIconList = [];
-        this.reqSignInfo(date);
+        this.selMonth= date
+        wx.startPullDownRefresh()
       },
       //选择那一天回调
       calChangeSelectedDay: function(date, e) {

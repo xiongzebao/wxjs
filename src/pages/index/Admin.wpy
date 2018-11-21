@@ -1,0 +1,85 @@
+<style lang="less">
+  .container {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .title {
+    text-align: center;
+  }
+  .item {
+    display: flex;
+    width: 30%;
+    border: 1rpx solid #dddddd;
+    border-radius: 5rpx;
+    height: 200rpx;
+    justify-content: center;
+    align-items: center;
+    margin: 20rpx;
+    .text {
+      font-size: 34rpx;
+      text-align: center;
+    }
+  }
+</style>
+
+<template>
+  <view class="root">
+    <view class="title">管理员:{{nickName}}</view>
+    <view class="container">
+      <view class="item" bindtap="onClickItem(config)">
+        <text class="text"> 配置</text>
+      </view>
+      <view class="item" bindtap="onClickItem(messageboard)">
+        留言板
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import BasePage from '@/pages/BasePage'
+  import request from '../../js/NetUtils.js'
+  import {
+    ApiComInfo
+  } from '../../js/url.js'
+  export default class xx extends BasePage {
+    config = {
+      'navigationBarTitleText': '管理',
+      'navigationBarTextStyle': 'white',
+      'navigationBarBackgroundColor': '#26a2ff',
+      'disableScroll': false,
+      'enablePullDownRefresh': false,
+      'backgroundTextStyle': 'dark'
+    }
+    components = {}
+    data = {}
+    computed = {
+      nickName() {
+        let userInfo = wx.getStorageSync("fullUserInfo");
+        return userInfo.nickName;
+      }
+    }
+    methods = {
+      onClickItem(p) {
+        if (p == 'config') {
+          wx.navigateTo({
+            url: `./Config`
+          })
+          return
+        }
+        if (p == 'messageboard') {
+          wx.navigateTo({
+            url: `./MessageBoard?isAdmin=1`
+          })
+          return
+        }
+      }
+    }
+    events = {}
+    onLoad() {}
+  }
+</script>

@@ -1,7 +1,7 @@
 let appConfig= {
 	server: {
-		host: "http://xiongbin.nat300.top"
-		//host: "https://xiongbin.top"
+		//host: "http://xiongbin.nat300.top"
+		host: "https://xiongbin.top"
 	},
 	appColor: {
 			pageColor: "#f7f6f7", //所有页面默认背景颜色

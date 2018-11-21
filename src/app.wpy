@@ -37,6 +37,8 @@
         "pages/index/completeUserInfo",
         "pages/index/readMe",
         "pages/index/Me",
+        "pages/index/Config",
+        "pages/index/Admin",
         "pages/index/FeedBack",
         "pages/index/spirit",
         "pages/index/Users",

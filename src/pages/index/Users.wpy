@@ -1,14 +1,16 @@
 <style lang="less">
   .container {
     display: flex;
+    padding-left: 10rpx;
   }
   .article {
     font-size: 25rpx;
     margin-top: 30rpx;
   }
   .title {
-    font-size: 27rpx;
-    color: red;
+    font-size: 30rpx;
+    color: #bbbbbb;
+    margin: 20rpx;
   }
   .user-layout {
     display: flex;
@@ -21,28 +23,36 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 30%;
+    width: 48%;
     margin-top: 10rpx;
+    background-color: #efefef;
+    margin-right: 5rpx;
+    padding: 2rpx;
   }
-  .avatarItem{
+  .avatarItem {
     border-radius: 50%;
-    width:75rpx;
-    height:75rpx;
+    width: 75rpx;
+    height: 75rpx;
+  }
+  .user-header {
+    width: 100%;
+  }
+  .sign-num {
+    font-size: 26rpx;
+    color: orange;
+    align-self: flex-start;
+    margin-left: 75rpx;
   }
 </style>
 
 <template>
   <view class="container">
-    <text class="title"></text>
-    <text class="article"></text>
+    <text class="title">持戒超一周圈友</text>
     <view class="user-layout">
       <repeat for="{{list}}" key="index" index="index" item="item">
         <view class="user-item">
-          <image  wx-if="{{item.gender==1}}" style="width:25rpx;height:25rpx;margin-bottom:-18rpx;margin-right:-32rpx;z-index:100" src="../../asset/imgs/sex_male.png" class="avatarItem" />
-          <image  wx-if="{{item.gender==2}}" style="width:25rpx;height:25rpx;margin-bottom:-18rpx;margin-right:-32rpx;z-index:100" src="../../asset/imgs/sex_female.png" class="avatarItem" />
-          <image  src="{{item.avatarUrl}}" class="avatarItem" @tap="previewImage({{item.avatarUrl}})" mode="aspectFill"/>
-          <text style="font-size:28rpx; white-space: nowrap;text-overflow:ellipsis;">{{item.nickName}}</text>
-          <text style="font-size:28rpx;color:orange"> {{item.signNum}}天</text>
+          <UserHeader :item="item" class="user-header"></UserHeader>
+          <text class="sign-num"> {{item.signNum}}天</text>
         </view>
       </repeat>
     </view>
@@ -53,7 +63,8 @@
   import wepy from 'wepy'
   import BasePage from '@/pages/BasePage'
   import request from '../../js/NetUtils.js'
-    import api from '../../js/url.js'
+  import api from '../../js/url.js'
+  import UserHeader from './UserHeader'
   import {
     ApiComInfo
   } from '../../js/url.js'
@@ -63,10 +74,12 @@
       'navigationBarTextStyle': 'white',
       'navigationBarBackgroundColor': '#26a2ff',
       'disableScroll': false,
-      'enablePullDownRefresh': false,
+      'enablePullDownRefresh': true,
       'backgroundTextStyle': 'dark'
     }
-    components = {}
+    components = {
+      UserHeader
+    }
     data = {
       list: []
     }
@@ -76,25 +89,29 @@
       }
     }
     methods = {
-         previewImage(avatarUrl,event) {
-        console.log("previewiamges")
+      previewImage(avatarUrl, event) {
         wx.previewImage({
           current: avatarUrl, // 当前显示图片的http链接
           urls: [avatarUrl] // 需要预览的图片http链接列表
         })
       },
     }
+    onPullDownRefresh() {
+      this.getUserInfo()
+    }
     events = {}
-    getSwiperInfo() {
+    getUserInfo() {
       let that = this;
       request.post(api.ApiRankList).then((data) => {
+          wx.stopPullDownRefresh()
         console.log(data);
         that.list = data.datas.list;
         that.$apply();
+      
       })
     }
     onLoad() {
-      this.getSwiperInfo()
+      wx.startPullDownRefresh()
     }
   }
 </script>
